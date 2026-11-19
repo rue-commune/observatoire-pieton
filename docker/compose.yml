@@ -1,0 +1,38 @@
+# Repository-specific project name, so this stack does not collide with
+# other repositories whose Compose files also live in docker/.
+name: observatoire-pieton
+
+services:
+  dev-base:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+      target: hugo-dev
+    image: observatoire-pieton-dev
+    working_dir: /devsrc
+    volumes:
+      - ..:/devsrc
+
+  # Production-style build into public/.
+  dev-build:
+    extends: dev-base
+    command: ["hugo", "--gc", "--minify", "--cleanDestinationDir"]
+
+  # Verification gate: a full render held in memory, so public/ is left
+  # alone, with warnings promoted to failures.
+  dev-test:
+    extends: dev-base
+    command: ["hugo", "--renderToMemory", "--panicOnWarning",
+              "--printPathWarnings", "--printI18nWarnings"]
+
+  # Live-reloading development server on http://localhost:1313/.
+  dev-serve:
+    extends: dev-base
+    ports:
+      - "127.0.0.1:1313:1313"
+    command: ["hugo", "server", "--bind", "0.0.0.0", "--port", "1313",
+              "--baseURL", "http://localhost:1313/", "--buildDrafts"]
+
+  dev-sh:
+    extends: dev-base
+    command: sleep infinity

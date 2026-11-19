@@ -1,0 +1,9 @@
+# The image only copies docker/; the checkout is bind-mounted at runtime.
+# Keep the build context small.
+.git
+public/
+resources/_gen/
+.hugo_build.lock
+*.html
+node_modules/
+.env
