@@ -23,12 +23,11 @@ services:
     extends: dev-base
     command: ["hugo", "--gc", "--cleanDestinationDir"]
 
-  # Verification gate: a full render held in memory, so public/ is left
-  # alone, with warnings promoted to failures.
+  # Verification gate (scripts/test.sh): strict in-memory Hugo render,
+  # leaving public/ alone, then the unit tests.
   dev-test:
     extends: dev-base
-    command: ["hugo", "--renderToMemory", "--panicOnWarning",
-              "--printPathWarnings", "--printI18nWarnings"]
+    command: ["scripts/test.sh"]
 
   # Live-reloading development server on http://localhost:1313/.
   dev-serve:

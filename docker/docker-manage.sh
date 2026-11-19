@@ -11,8 +11,7 @@ BUILD_NOCACHE=""
 usage() {
     echo "Usage: $0 [-b] build|test|serve|sh|down [hugo flags...]"
     echo "  -b  Rebuild the selected service without Docker cache"
-    echo "  Extra arguments to build, test and serve are appended to the"
-    echo "  service's hugo command."
+    echo "  Extra arguments to build, test and serve are passed to hugo."
 }
 while getopts ":b" opt; do
     case "$opt" in
@@ -39,9 +38,7 @@ case "$action" in
         ;;
     test)
         maybe_build_nocache dev-test
-        docker_compose run --rm --build dev-test \
-            hugo --renderToMemory --panicOnWarning \
-            --printPathWarnings --printI18nWarnings "$@"
+        docker_compose run --rm --build dev-test scripts/test.sh "$@"
         ;;
     serve)
         maybe_build_nocache dev-serve

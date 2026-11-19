@@ -7,6 +7,8 @@ the original self-contained Leaflet page that the site grows from.
 
 Before any git or gh operation (status, diff, add, commit, branch,
 merge, rebase, push, PRs, issues), read and follow [GIT.md](GIT.md).
+Before changing `functions/`, deployment, Cloudflare settings or the
+Hugo version, read and follow [DEPLOY.md](DEPLOY.md).
 
 ## Environment
 
@@ -23,7 +25,7 @@ means `(cd docker && ./docker-manage.sh test)`; use the equivalent
 
 | Command | Effect |
 | --- | --- |
-| `./docker/docker-manage.sh test` | Verification gate: full render in memory, warnings fail |
+| `./docker/docker-manage.sh test` | Verification gate (`scripts/test.sh`): strict Hugo render, then unit tests |
 | `./docker/docker-manage.sh build` | `hugo --gc --cleanDestinationDir` into `public/` |
 | `./docker/docker-manage.sh serve` | Live server on http://localhost:1313/ (drafts shown) |
 | `./docker/docker-manage.sh sh` | Shared interactive shell in the container |
@@ -108,6 +110,9 @@ its own overhead and loses shared context.
   shared by all cities, inlined into the page.
 - `layouts/home.html`, `layouts/_partials/config-tuiles.html`: assemble
   the single self-contained page.
+- `functions/`: Cloudflare Pages Functions (the tile proxy).
+- `tests/`: unit tests (`node --test`), run by the gate.
+- `scripts/`: project scripts, including `test.sh`, the gate itself.
 - `public/` and `resources/_gen/` are generated and ignored. Docker files
   live in `docker/`; the build context is the repository root, so
   `.dockerignore` sits there.
@@ -123,12 +128,12 @@ deploy. To build a keyed page locally, e.g. to compare with the original,
 use `dm build --environment development --destination public-local`
 (git-ignored), never the default `public/`.
 
-Never set `HUGO_PARAMS_CARTOKEY` in Cloudflare. The planned production
-setup sends tiles through a same-origin proxy that adds the key
-server-side, selected with `HUGO_PARAMS_TILESURL`; until that exists,
-production builds use the keyless CARTO URL. `observatoire-passages-pietons-nantes.html`
-is the original page; it embeds the key, is git-ignored, and must never
-be committed. Before any commit, check that the staged diff doesn't
+In production, tiles go through the same-origin proxy in
+`functions/tuiles/`, which adds the key server-side from a Cloudflare
+secret; see DEPLOY.md. Never set `HUGO_PARAMS_CARTOKEY` in Cloudflare.
+
+`observatoire-passages-pietons-nantes.html` is the original page; it
+embeds the key, is git-ignored, and must never be committed. Before any commit, check that the staged diff doesn't
 contain the key.
 
 ## Updating the data

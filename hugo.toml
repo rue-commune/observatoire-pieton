@@ -1,4 +1,5 @@
-# Provisional; Cloudflare Pages builds override it with --baseURL.
+# Provisional: set to the production domain once known. The page itself
+# uses no absolute URLs, so the value does not affect it.
 baseURL = "https://observatoire-pieton.pages.dev/"
 locale = "fr"
 title = "Observatoire piéton"

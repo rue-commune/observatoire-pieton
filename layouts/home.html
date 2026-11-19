@@ -1,5 +1,7 @@
-{{- /* One self-contained page per city: config and data are inlined so the
-       page works offline and embedded, exactly like the original build.
+{{- /* One self-contained page per city: config, data, CSS and JS are
+       inlined, exactly like the original standalone page. Only Leaflet and
+       the tiles are external; in production the tiles come from the site's
+       own /tuiles/ proxy (see DEPLOY.md).
        html/template strips JS comments, so the config banner is emitted as
        data. */ -}}
 {{- $ville := .Params.ville -}}

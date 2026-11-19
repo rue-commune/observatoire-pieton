@@ -6,6 +6,8 @@ resources/_gen/
 
 # env file
 .env
+# Wrangler local secrets
+.dev.vars
 
 # Editor backups
 *~
