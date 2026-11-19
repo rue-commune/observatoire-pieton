@@ -1,0 +1,83 @@
+{
+ "echeance": "2026-12-31",
+ "logoUrl": "https://parispietons.fr/wp-content/uploads/2026/05/cropped-Logo-sans-fond-270x270.png",
+ "siteUrl": "https://parispietons.fr/",
+ "siteNom": "Collectif Paris Piétons",
+ "tuiles": "https://basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+ "pointZoom": 14,
+ "labelZoom": 11,
+ "choroMax": 0.25,
+ "titre": "Passages piétons de Nantes Métropole : stationnement dans les 5 m",
+ "sousTitre": "Photographie des places de stationnement situées à moins de 5 m des passages piétons",
+ "territoire": "Nantes Métropole",
+ "territoireCourt": "toute la métropole",
+ "territoireMaj": "Toute la métropole",
+ "producteur": "Nantes Métropole",
+ "licence": "ODbL",
+ "unite": {
+  "one": "commune",
+  "many": "communes",
+  "the": "une commune",
+  "fem": true
+ },
+ "pageUrl": "",
+ "voituresDetail": "payant, gratuit matérialisé, réservé (taxis, arrêt minute…)",
+ "attributsPassage": true,
+ "typesMarquage": {
+  "Résine": "résine",
+  "Blanc": "peinture blanche",
+  "Clous": "clous",
+  "Autre": "autre"
+ },
+ "attribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap<\/a> &copy; <a href=\"https://carto.com/attributions\">CARTO<\/a> · Données Nantes Métropole et OpenStreetMap (ODbL)",
+ "sources": [
+  {
+   "nom": "Traversées piétonnes (Nantes Métropole)",
+   "url": "https://data.nantesmetropole.fr/explore/dataset/244400404_traversees-pietones-nantes-metropole/"
+  },
+  {
+   "nom": "Emplacements de stationnement payant (Nantes)",
+   "url": "https://data.nantesmetropole.fr/explore/dataset/244400404_stationnement-nantes-emplacements/"
+  },
+  {
+   "nom": "Emplacements gratuits matérialisés (Nantes Métropole)",
+   "url": "https://data.nantesmetropole.fr/explore/dataset/244400404_emplacements-gratuits-materialises-nantes-metropole/"
+  },
+  {
+   "nom": "Emplacements de stationnement réservés (Nantes Métropole)",
+   "url": "https://data.nantesmetropole.fr/explore/dataset/244400404_emplacements-stationnement-reserves-nantes-metropole/"
+  },
+  {
+   "nom": "Aires de livraison (Nantes Métropole)",
+   "url": "https://data.nantesmetropole.fr/explore/dataset/244400404_aires-livraison-nantes-metropole/"
+  },
+  {
+   "nom": "Emplacements PMR (Nantes Métropole)",
+   "url": "https://data.nantesmetropole.fr/explore/dataset/244400404_emplacements-pmr-nantes-metropole/"
+  },
+  {
+   "nom": "Sens de circulation et noms des rues (OpenStreetMap, ODbL)",
+   "url": "https://www.openstreetmap.org/",
+   "date": "2026-11-05"
+  },
+  {
+   "nom": "Contours des communes (france-geojson, d'après l'IGN)",
+   "url": "https://github.com/gregoiredavid/france-geojson"
+  }
+ ],
+ "methode": [
+  "Chaque traversée piétonne de l'inventaire de Nantes Métropole est un trait tracé en travers de la rue. On considère que le passage mesure 3 m de large le long de la rue, et on trace une zone qui le prolonge de chaque côté sur <strong>4 m au lieu des 5 m de la loi<\/strong> : cette marge évite de déclarer non conforme un passage à cause d'une place légèrement mal positionnée dans les données. La zone déborde aussi de 2,5 m au-delà des extrémités du passage, pour couvrir les places le long du trottoir et en encoche. Elle est coupée en quatre quarts, deux amont et deux aval.",
+  "Une place compte si elle empiète d'au moins 0,5 m² sur la zone.",
+  "Les places payantes et les emplacements réservés sont décrits par leur contour exact. Les emplacements gratuits matérialisés sont décrits par un trait le long du trottoir : on leur donne 2,2 m de large, et on estime le nombre de places à une place par 5,5 m en stationnement longitudinal et une par 2,5 m en épi ou en bataille. Les aires de livraison et les places PMR ne sont connues que par un point : on les représente par un disque (rayon de 2,5 m pour une place PMR, de la moitié de la longueur indiquée pour une aire de livraison).",
+  "Aux carrefours, les bandes de stationnement de la rue transversale ne sont pas comptées : une bande perpendiculaire à la rue traversée par le passage appartient à l'autre rue.",
+  "Dans une rue à double sens, ou à sens unique avec double-sens cyclable, les deux quarts amont sont en diagonale de part et d'autre du passage. Dans une rue à sens unique sans double-sens cyclable, les deux quarts situés du côté d'où arrivent les voitures sont amont. Le sens de circulation vient d'OpenStreetMap ; une rue à sens unique est considérée comme équipée d'un double-sens cyclable seulement si OpenStreetMap l'indique. Les rues absentes d'OpenStreetMap ou sans sens indiqué sont traitées comme des rues à double sens.",
+  "Le nom de la rue traversée et du carrefour le plus proche vient aussi d'OpenStreetMap : « à l'angle de… » si un carrefour se trouve à moins de 18 m du passage, sinon « entre… et… », d'après les carrefours situés de part et d'autre.",
+  "Les places vélos et trottinettes sont autorisées par la loi et ne sont pas comptées."
+ ],
+ "limites": [
+  "Seuls les emplacements <strong>matérialisés au sol<\/strong> et recensés par Nantes Métropole sont pris en compte. Le stationnement autorisé le long du trottoir sans marquage, fréquent dans les communes hors de Nantes, n'est pas mesuré : la part de passages conformes y est sans doute surestimée.",
+  "Le résultat reflète l'état des données publiées au moment du calcul. Une place supprimée sur le terrain mais pas encore dans les données apparaît encore comme non conforme, et inversement.",
+  "Certains grands passages sont découpés en plusieurs traits dans l'inventaire, et chaque trait est compté comme un passage.",
+  "Le stationnement illicite (voitures garées hors emplacement) n'est pas mesuré : seuls les emplacements aménagés sont concernés par la loi."
+ ]
+}

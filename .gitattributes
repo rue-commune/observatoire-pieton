@@ -1,0 +1,3 @@
+# Generated city data: a single 1 MB line that is replaced on each update.
+# Hide it from textual diffs and mark it as generated.
+assets/villes/*/data.json -diff linguist-generated

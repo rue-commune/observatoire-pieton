@@ -1,0 +1,167 @@
+{{- /* One self-contained page per city: config and data are inlined so the
+       page works offline and embedded, exactly like the original build.
+       html/template strips JS comments, so the config banner is emitted as
+       data. */ -}}
+{{- $ville := .Params.ville -}}
+{{- $cfgRes := resources.Get (printf "villes/%s/config.json" $ville) -}}
+{{- $dataRes := resources.Get (printf "villes/%s/data.json" $ville) -}}
+{{- if not (and $cfgRes $dataRes) -}}
+  {{- errorf "%s: missing assets/villes/%s/config.json or data.json" .File.Path $ville -}}
+{{- end -}}
+{{- $cfg := $cfgRes | transform.Unmarshal -}}
+{{- /* data.json is regenerated periodically and inlined verbatim, so a bad
+       update would otherwise ship a broken page: fail the build instead.
+       Unmarshal also rejects invalid JSON. */ -}}
+{{- $data := $dataRes | transform.Unmarshal -}}
+{{- range slice "generated" "labels" "communes" "quartiers" "rows" "counts" "geo" "removal" -}}
+  {{- if eq (index $data .) nil -}}
+    {{- errorf "%s: data.json lacks required key %q (or it is null)" $ville . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (findRE `^\d{4}-\d{2}-\d{2}$` $data.generated) -}}
+  {{- errorf "%s: data.json generated=%q is not YYYY-MM-DD" $ville $data.generated -}}
+{{- end -}}
+{{- $_ := time.AsTime $data.generated -}}{{/* rejects impossible dates */}}
+{{- /* Inlined JSON must not be able to close or confuse its <script>. */ -}}
+{{- range slice $cfgRes $dataRes -}}
+  {{- if findRE `(?i)</script|<!--` .Content 1 -}}
+    {{- errorf "%s: %s contains </script or <!--; escape < as \\u003c" $ville .Name -}}
+  {{- end -}}
+{{- end -}}
+{{- $css := resources.Get "css/observatoire.css" -}}
+{{- $js := resources.Get "js/observatoire.js" -}}
+{{- $cfgJSON := partial "config-tuiles.html" (dict "json" $cfgRes.Content "cfg" $cfg) -}}
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ $cfg.titre }}</title>
+<meta name="description" content="{{ .Description }}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+{{ "/* =====================================================================\n   CONFIGURATION (modifiable)\n   ===================================================================== */" | safeJS }}
+window.CITY_CONFIG = {{ $cfgJSON | safeJS }};
+</script>
+<script>window.CITY_DATA = {{ strings.TrimSuffix "\n" $dataRes.Content | safeJS }};</script>
+<style>
+{{ $css.Content | safeCSS }}</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a id="logo-link" href="#"><img id="logo" alt="" src="" onerror="this.remove()"></a>
+  <div class="titles"><h1 id="titre"></h1><p id="sous-titre"></p></div>
+  <nav><a href="#methodologie">Méthodologie</a></nav>
+</header>
+
+<main class="layout">
+  <div class="panel">
+    <section class="block" id="kpi" aria-live="polite">
+      <h2 id="k-title">Conformité à la loi</h2>
+      <div class="hero"><span class="num" id="k-pct">–</span><span class="den">des passages piétons</span></div>
+      <p class="hero-label" id="k-label"></p>
+      <div class="bar" id="k-bar" role="img"></div>
+      <p class="sub-kpi" id="k-reco"></p>
+      <div class="countdown" id="k-countdown"></div>
+      <p class="snapshot" id="k-snap"></p>
+    </section>
+
+    <section class="block" id="s-filtres">
+      <h2>Légende et filtres</h2>
+      <div class="legend">
+        <label><input type="checkbox" id="show-ko" checked><span class="dot ko"></span><span>Non conforme<small>place(s) dans les 5 m côté amont</small></span><span class="count" id="c-ko"></span></label>
+        <label><input type="checkbox" id="show-mid" checked><span class="dot mid"></span><span>Conforme à l'obligation réglementaire<small>place(s) dans les 5 m côté aval</small></span><span class="count" id="c-mid"></span></label>
+        <label><input type="checkbox" id="show-ok" checked><span class="dot ok"></span><span>Conforme à la recommandation complète<small>5 m dégagés des deux côtés (Cerema)</small></span><span class="count" id="c-ok"></span></label>
+      </div>
+    </section>
+
+    <section class="block" id="s-rank">
+      <h2 id="rank-title">Classement des communes</h2>
+      <div class="rank-tabs" id="rank-tabs" hidden>
+        <button type="button" data-mode="pct" aria-pressed="true">Taux de conformité</button>
+        <button type="button" data-mode="n" aria-pressed="false">Passages non conformes</button>
+      </div>
+      <ul class="rank" id="rank"></ul>
+      <div class="qsel" id="qsel" hidden>
+        <label for="q-select">Quartier<select id="q-select"></select></label>
+        <div class="q-score" id="q-score" hidden></div>
+      </div>
+      <p class="rank-note" id="rank-note"></p>
+    </section>
+
+    <section class="block" id="s-places">
+      <h2>Places à supprimer pour la mise en conformité</h2>
+      <div class="scope-row"><strong id="pl-scope"></strong><button type="button" id="pl-reset" hidden></button></div>
+      <div class="hero"><span class="num" id="pl-total" style="font-size:2.2rem">–</span><span class="den">places</span></div>
+      <p class="hero-label" id="pl-label"></p>
+      <div class="legend">
+        <div class="sub">Types de places qui rendent un passage non conforme. Décochez un type pour masquer sur la carte les passages dont le résultat dépend de ce type. Les chiffres comptent toujours tous les types de places.</div>
+        <label><input type="checkbox" class="cat" data-bit="1" checked><span>Voitures<small id="cat-1-sub">payant, gratuit, réservé…</small></span><span class="count" id="c-cat-1"></span></label>
+        <label><input type="checkbox" class="cat" data-bit="2" checked><span>Livraisons</span><span class="count" id="c-cat-2"></span></label>
+        <label><input type="checkbox" class="cat" data-bit="4" checked><span>Deux-roues motorisés</span><span class="count" id="c-cat-4"></span></label>
+        <label><input type="checkbox" class="cat" data-bit="8" checked><span>GIG-GIC (handicap)</span><span class="count" id="c-cat-8"></span></label>
+        <div class="sub" style="margin-top:6px">Nombre de places à supprimer pour l'obligation réglementaire. Les places vélos et trottinettes sont autorisées par la loi.</div>
+      </div>
+      <p class="rank-note">Estimation : part de chaque emplacement située dans la zone contrôlée, arrondie à la place supérieure. Une place proche de plusieurs passages n'est comptée qu'une fois.</p>
+    </section>
+
+    <section class="block" id="s-search">
+      <h2>Chercher une adresse</h2>
+      <label class="visually-hidden" for="search">Adresse</label>
+      <input class="search" id="search" placeholder="Ex. : 2 rue de Strasbourg" autocomplete="off">
+      <ul class="sugg" id="sugg"></ul>
+    </section>
+
+    <section class="block" id="s-export">
+      <h2>Télécharger les passages pour une sortie de terrain</h2>
+      <p class="hero-label" style="margin:0"><strong id="exp-n">–</strong> <span id="exp-scope"></span></p>
+      <div class="exp-row">
+        <button type="button" id="exp-geojson">GeoJSON (carte)</button>
+        <button type="button" id="exp-csv" class="sec">Tableur (CSV)</button>
+      </div>
+      <p class="rank-note" id="exp-note"></p>
+    </section>
+  </div>
+
+  <div class="map-wrap">
+    <div id="map" role="region" aria-label="Carte de conformité des passages piétons"></div>
+    <div class="zoom-hint" id="zoom-hint">Zoomez pour voir chaque passage piéton</div>
+    <div class="choro-legend" id="choro-legend">
+      <strong id="choro-title">Part des passages piétons conformes à la réglementation</strong>
+      <div class="ramp"></div>
+      <div class="ends" id="choro-ends"></div>
+    </div>
+  </div>
+</main>
+
+<section id="methodologie">
+  <div class="inner">
+    <h2>Méthodologie</h2>
+    <p>La loi d'orientation des mobilités de 2019 (article L118-5-1 du code de la voirie routière) interdit tout emplacement de stationnement sur la chaussée dans les <strong>5 mètres en amont des passages piétons</strong>, sauf pour les vélos et engins de déplacement personnel. Le but est que piétons et conducteurs se voient mutuellement. Toutes les communes doivent s'être mises en conformité <strong>au plus tard le 31 décembre 2026</strong>.</p>
+    <p id="m-snapshot"></p>
+
+    <h3>Trois niveaux, d'après les prescriptions du Cerema</h3>
+    <ul>
+      <li><span class="dot ko"></span> <strong>Non conforme</strong> : au moins une place se trouve dans les 5 m <em>en amont</em> du passage, du côté d'où arrivent les véhicules. Une place sur le passage lui-même compte aussi.</li>
+      <li><span class="dot mid"></span> <strong>Conforme à l'obligation réglementaire</strong> : aucune place côté amont, mais au moins une dans les 5 m côté aval.</li>
+      <li><span class="dot ok"></span> <strong>Conforme à la recommandation complète</strong> : 5 m dégagés des deux côtés. Le Cerema recommande même 5 à 10 m.</li>
+    </ul>
+
+    <h3>Comment c'est mesuré</h3>
+    <ul id="m-method"></ul>
+
+    <h3>Données utilisées</h3>
+    <ul id="m-data"></ul>
+
+    <h3>Limites</h3>
+    <ul id="m-limits"></ul>
+  </div>
+</section>
+<footer class="site-footer" id="footer"></footer>
+
+<script>
+{{ $js.Content | safeJS }}</script>
+</body>
+</html>

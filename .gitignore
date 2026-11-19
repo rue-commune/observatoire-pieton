@@ -1,5 +1,6 @@
 # Hugo output and caches
 public/
+public-local/
 resources/_gen/
 .hugo_build.lock
 
@@ -8,3 +9,7 @@ resources/_gen/
 
 # Editor backups
 *~
+
+# Original standalone page: embeds the CARTO API key. Never commit it; it
+# is kept locally only as the reference the Hugo output is compared with.
+/observatoire-passages-pietons-nantes.html

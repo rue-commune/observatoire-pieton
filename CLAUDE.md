@@ -24,7 +24,7 @@ means `(cd docker && ./docker-manage.sh test)`; use the equivalent
 | Command | Effect |
 | --- | --- |
 | `./docker/docker-manage.sh test` | Verification gate: full render in memory, warnings fail |
-| `./docker/docker-manage.sh build` | `hugo --gc --minify --cleanDestinationDir` into `public/` |
+| `./docker/docker-manage.sh build` | `hugo --gc --cleanDestinationDir` into `public/` |
 | `./docker/docker-manage.sh serve` | Live server on http://localhost:1313/ (drafts shown) |
 | `./docker/docker-manage.sh sh` | Shared interactive shell in the container |
 | `./docker/docker-manage.sh down` | Stop the development stack |
@@ -98,9 +98,47 @@ its own overhead and loses shared context.
 
 ## Layout
 
-Standard Hugo layout (`hugo.toml`, `content/`, `layouts/`, `assets/`,
-`static/`, `data/`). `public/` and `resources/_gen/` are generated and
-ignored. Docker files live in `docker/`; the build context is the
-repository root, so `.dockerignore` sits there.
+- `content/_index.md`: the home page; `ville:` selects the city.
+- `assets/villes/<ville>/config.json`: hand-maintained city settings and
+  texts, inlined verbatim (key order matters to the app; don't
+  re-serialise it). Its `tuiles` value is the keyless CARTO URL.
+- `assets/villes/<ville>/data.json`: generated data, replaced on each
+  update. Never edit it by hand.
+- `assets/css/observatoire.css`, `assets/js/observatoire.js`: the app,
+  shared by all cities, inlined into the page.
+- `layouts/home.html`, `layouts/_partials/config-tuiles.html`: assemble
+  the single self-contained page.
+- `public/` and `resources/_gen/` are generated and ignored. Docker files
+  live in `docker/`; the build context is the repository root, so
+  `.dockerignore` sits there.
+
+## Secrets: the CARTO tile key
+
+The key must never be committed. Locally it lives in the git-ignored
+`.env` as `HUGO_PARAMS_CARTOKEY`, which Compose passes to Hugo (the
+`env_file` form used needs Docker Compose 2.24 or later). Hugo honours it
+only outside the production environment: `dm serve` uses it, while
+`dm build` and `dm test` never emit it, so `public/` is always safe to
+deploy. To build a keyed page locally, e.g. to compare with the original,
+use `dm build --environment development --destination public-local`
+(git-ignored), never the default `public/`.
+
+Never set `HUGO_PARAMS_CARTOKEY` in Cloudflare. The planned production
+setup sends tiles through a same-origin proxy that adds the key
+server-side, selected with `HUGO_PARAMS_TILESURL`; until that exists,
+production builds use the keyless CARTO URL. `observatoire-passages-pietons-nantes.html`
+is the original page; it embeds the key, is git-ignored, and must never
+be committed. Before any commit, check that the staged diff doesn't
+contain the key.
+
+## Updating the data
+
+Replace `assets/villes/<ville>/data.json` with the new generated file,
+then run the test gate. The layout validates the JSON, the required
+keys (present and non-null), the `generated` date, and the absence of
+`</script` or `<!--`, so a malformed update fails the build
+instead of shipping a broken page. If the pipeline also changed source
+dates or texts, update `config.json` too. Commit the data update on its
+own.
 
 When you have read this file, say so aloud.
