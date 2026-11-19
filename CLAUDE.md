@@ -7,7 +7,7 @@ the original self-contained Leaflet page that the site grows from.
 
 Before any git or gh operation (status, diff, add, commit, branch,
 merge, rebase, push, PRs, issues), read and follow [GIT.md](GIT.md).
-Before changing `functions/`, deployment, Cloudflare settings or the
+Before changing deployment, Cloudflare settings, the basemap or the
 Hugo version, read and follow [DEPLOY.md](DEPLOY.md).
 
 ## Environment
@@ -25,7 +25,7 @@ means `(cd docker && ./docker-manage.sh test)`; use the equivalent
 
 | Command | Effect |
 | --- | --- |
-| `./docker/docker-manage.sh test` | Verification gate (`scripts/test.sh`): strict Hugo render, then unit tests |
+| `./docker/docker-manage.sh test` | Verification gate (`scripts/test.sh`): strict Hugo render |
 | `./docker/docker-manage.sh build` | `hugo --gc --cleanDestinationDir` into `public/` |
 | `./docker/docker-manage.sh serve` | Live server on http://localhost:1313/ (drafts shown) |
 | `./docker/docker-manage.sh sh` | Shared interactive shell in the container |
@@ -103,38 +103,26 @@ its own overhead and loses shared context.
 - `content/_index.md`: the home page; `ville:` selects the city.
 - `assets/villes/<ville>/config.json`: hand-maintained city settings and
   texts, inlined verbatim (key order matters to the app; don't
-  re-serialise it). Its `tuiles` value is the keyless CARTO URL.
+  re-serialise it). `tuiles` is the keyless IGN Plan IGN v2 tile URL.
 - `assets/villes/<ville>/data.json`: generated data, replaced on each
   update. Never edit it by hand.
 - `assets/css/observatoire.css`, `assets/js/observatoire.js`: the app,
   shared by all cities, inlined into the page.
-- `layouts/home.html`, `layouts/_partials/config-tuiles.html`: assemble
-  the single self-contained page.
-- `functions/`: Cloudflare Pages Functions (the tile proxy).
-- `tests/`: unit tests (`node --test`), run by the gate.
+- `layouts/home.html`: assembles the single self-contained page.
 - `scripts/`: project scripts, including `test.sh`, the gate itself.
 - `public/` and `resources/_gen/` are generated and ignored. Docker files
   live in `docker/`; the build context is the repository root, so
   `.dockerignore` sits there.
 
-## Secrets: the CARTO tile key
+## Basemap and the old CARTO key
 
-The key must never be committed. Locally it lives in the git-ignored
-`.env` as `HUGO_PARAMS_CARTOKEY`, which Compose passes to Hugo (the
-`env_file` form used needs Docker Compose 2.24 or later). Hugo honours it
-only outside the production environment: `dm serve` uses it, while
-`dm build` and `dm test` never emit it, so `public/` is always safe to
-deploy. To build a keyed page locally, e.g. to compare with the original,
-use `dm build --environment development --destination public-local`
-(git-ignored), never the default `public/`.
+Tiles come from IGN's Géoplateforme (Plan IGN v2), which needs no key, so
+the site has no secrets. See DEPLOY.md for why, and for what was used
+before.
 
-In production, tiles go through the same-origin proxy in
-`functions/tuiles/`, which adds the key server-side from a Cloudflare
-secret; see DEPLOY.md. Never set `HUGO_PARAMS_CARTOKEY` in Cloudflare.
-
-`observatoire-passages-pietons-nantes.html` is the original page; it
-embeds the key, is git-ignored, and must never be committed. Before any commit, check that the staged diff doesn't
-contain the key.
+`observatoire-passages-pietons-nantes.html` is the original page. It
+embeds a CARTO API key, is git-ignored, and must never be committed.
+Never add that key to any file.
 
 ## Updating the data
 

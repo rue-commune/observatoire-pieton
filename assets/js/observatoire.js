@@ -73,7 +73,7 @@
   var b = L.geoJSON(D.geo).getBounds();
   var map = L.map("map", { minZoom: 9, maxZoom: 20, maxBounds: b.pad(0.3), preferCanvas: true });
   var base = L.tileLayer(C.tuiles, { attribution: C.attribution, maxNativeZoom: 18, maxZoom: 20 }).addTo(map);
-  // fond de carte de secours (OpenStreetMap) si les tuiles CARTO sont refusées
+  // fond de carte de secours (OpenStreetMap) si les tuiles IGN sont refusées
   var tileErr = 0, tileOk = false;
   base.on("tileload", function () { tileOk = true; });
   base.on("tileerror", function () { if (!tileOk && ++tileErr === 3) base.setUrl("https://tile.openstreetmap.org/{z}/{x}/{y}.png"); });

@@ -129,3 +129,7 @@ h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color:
   .embed .layout { height: auto; }
   .embed .map-wrap { height: 460px; min-height: 0; }
 }
+/* Plan IGN v2 is a busy, saturated basemap: mute it so the red/orange/green
+   crossing markers and the choropleth stay readable. Only the tile pane is
+   filtered; markers and overlays live in other panes. */
+#map .leaflet-tile-pane { filter: saturate(.3) brightness(1.08) contrast(.85); }

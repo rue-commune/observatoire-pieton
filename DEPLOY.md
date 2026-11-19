@@ -2,21 +2,8 @@
 
 The site deploys as a Cloudflare Pages project connected to the Git
 repository: each push to the production branch builds and deploys, and
-other branches get preview deployments.
-
-## How the CARTO key stays private
-
-The key is never in git and never reaches the browser:
-
-- Pages builds set `HUGO_PARAMS_TILESURL=/tuiles/{z}/{x}/{y}{r}.png`, so
-  the page requests tiles from its own origin.
-- `functions/tuiles/[[path]].js` (a Pages Function) answers those
-  requests, adding the key from the encrypted secret `CARTO_KEY` when
-  fetching from CARTO. It serves only well-formed tile paths, only to the
-  site's own pages (`Sec-Fetch-Site`/`Referer`), and never relays CARTO's
-  error responses, which could echo the keyed URL.
-- Hugo ignores `HUGO_PARAMS_CARTOKEY` in production builds anyway, so a
-  misconfiguration cannot put the key into the page.
+other branches get preview deployments. The output is static; there are
+no Functions and no secrets.
 
 ## Project settings
 
@@ -25,60 +12,57 @@ The key is never in git and never reaches the browser:
 | Framework preset | Hugo |
 | Build command | `hugo --gc` |
 | Build output directory | `public` |
-| Root directory | `/` (Pages finds `functions/` there) |
+| Root directory | `/` |
 
 Environment variables, for both Production and Preview:
 
-| Name | Type | Value |
-| --- | --- | --- |
-| `HUGO_VERSION` | plain text | `0.170.1`; keep equal to `HUGO_VERSION` in `docker/Dockerfile` |
-| `HUGO_PARAMS_TILESURL` | plain text | `/tuiles/{z}/{x}/{y}{r}.png` |
-| `CARTO_KEY` | **secret** (encrypted) | the CARTO API key |
-| `CARTO_REFERER` | plain text, optional | only if the key is restricted to a referring site |
-
-Never set `HUGO_PARAMS_CARTOKEY` on Cloudflare.
+| Name | Value |
+| --- | --- |
+| `HUGO_VERSION` | `0.170.1`; keep equal to `HUGO_VERSION` in `docker/Dockerfile` |
 
 ## Checking a deployment
 
-Replace `$SITE` with the deployment URL.
+Open the page and confirm the muted IGN basemap appears, not the
+OpenStreetMap fallback the app switches to when 3 tiles fail before any
+has loaded.
 
-The Function only answers GET, so test with GET: a HEAD request (such as
-`curl -I`) bypasses it and would return the static page.
+## Basemap: IGN Plan IGN v2
 
-```bash
-code() { curl -s -o /dev/null -w '%{http_code} %{content_type}\n' "$@"; }
-# The key must not appear in the page (expect 0).
-curl -s "$SITE/" | grep -c 'key='
-# A same-origin tile request succeeds (expect 200 image/png).
-code -H 'Sec-Fetch-Site: same-origin' "$SITE/tuiles/14/8099/5703.png"
-# Hot-linking is refused (expect 403 text/plain).
-code -H 'Sec-Fetch-Site: cross-site' "$SITE/tuiles/14/8099/5703.png"
-```
+Tiles come straight from the browser to IGN's Géoplateforme (the service
+behind cartes.gouv.fr), set by `tuiles` in
+`assets/villes/<ville>/config.json`:
 
-Then open the page and confirm the CARTO basemap appears, rather than the
-OpenStreetMap fallback the app switches to after repeated tile errors.
+- Layer `GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2`, style `normal`, PNG, tile
+  matrix set `PM_0_19` (Web Mercator, zoom 0 to 19), via WMTS GetTile on
+  `https://data.geopf.fr/wmts`.
+- No key or account: public Géoplateforme services have no access
+  control. The tile service is explicitly exempt from the per-IP rate
+  limits that apply to other Géoplateforme APIs ("Non soumis à limite
+  d'usage"), and is free for commercial or non-commercial use. IGN may
+  still block abusive use, there is no SLA, and the terms can change at
+  30 days' notice: <https://cartes.gouv.fr/cgu>.
+- Attribution: "Fond de carte © IGN – Géoplateforme". The terms set no
+  wording; check the Plan IGN v2 record in the cartes.gouv.fr catalogue
+  if it matters.
+- Plan IGN is busy and saturated, so `assets/css/observatoire.css` mutes
+  the tile pane (`saturate(.3) brightness(1.08) contrast(.85)`) to keep
+  the status markers readable.
 
-## Costs and limits
+### Before: CARTO Voyager with an API key (until November 2026)
 
-Every tile request invokes the Function, even when the response is
-cached. The free plan allows 100,000 Function requests a day; a visit
-loads roughly 50 to 200 tiles. Beyond that, Workers Paid ($5/month)
-covers 10 million requests. Browsers cache tiles for 7 days. Edge caching
-uses the Cache API; if it is unavailable on a given hostname the proxy
-still works, only without edge caching.
+The original standalone page used CARTO's Voyager raster tiles
+(`basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=…`),
+with the API key embedded in the page, so every visitor could read it.
+To keep it private on Cloudflare Pages we built a same-origin Pages
+Function proxy (`functions/tuiles/[[path]].js`, with unit tests) that
+added the key server-side from an encrypted secret, with the key kept
+locally in a git-ignored `.env`. That worked, but it cost a Function
+invocation per tile (free tier: 100,000 a day, at 50 to 200 tiles per
+visit) and depended on CARTO's terms allowing proxying.
 
-Check that CARTO's terms for this key allow server-side proxying and
-caching of tiles.
-
-## Local testing of the Function
-
-`dm test` runs the Function's unit tests with `fetch` and the cache
-mocked. To run it for real against a local build, use Wrangler on the
-host with the key in a git-ignored `.dev.vars` file (`CARTO_KEY=...`):
-
-```bash
-./docker/docker-manage.sh build
-npx wrangler pages dev public
-```
+Switching to keyless IGN tiles removed the key, the proxy, its secret and
+those costs. To bring the proxy back, look at the commit that introduced
+it, 3d99f1b ("Add same-origin CARTO tile proxy for production"), or run
+`git log --all -- 'functions/tuiles/[[path]].js'`.
 
 When you have read this file, say so aloud.

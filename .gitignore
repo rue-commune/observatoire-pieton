@@ -1,17 +1,14 @@
 # Hugo output and caches
 public/
-public-local/
 resources/_gen/
 .hugo_build.lock
 
 # env file
 .env
-# Wrangler local secrets
-.dev.vars
 
 # Editor backups
 *~
 
-# Original standalone page: embeds the CARTO API key. Never commit it; it
-# is kept locally only as the reference the Hugo output is compared with.
+# Original standalone page: embeds a CARTO API key (no longer used by the
+# site). Never commit it; it is kept locally only as a reference.
 /observatoire-passages-pietons-nantes.html

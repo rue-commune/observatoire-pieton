@@ -7,10 +7,6 @@ title = "Observatoire piéton"
 # The site is a single self-contained page for now.
 disableKinds = ["taxonomy", "term", "section", "page", "RSS", "sitemap", "404"]
 
-# Tile settings come from the environment, never from committed files:
-#   HUGO_PARAMS_CARTOKEY  local development only (see .env)
-#   HUGO_PARAMS_TILESURL  production tile proxy, e.g. /tuiles/{z}/{x}/{y}{r}.png
-
 defaultContentLanguage = "fr"
-# Keep the page byte-for-byte comparable with the original standalone file.
+# Keep the page diffable against the original standalone file.
 disableHugoGeneratorInject = true

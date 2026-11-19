@@ -11,9 +11,6 @@ echo "==== Hugo: full render, warnings are failures"
 hugo --renderToMemory --panicOnWarning \
     --printPathWarnings --printI18nWarnings "$@" || failed+=(hugo)
 
-echo "==== Unit tests (node --test)"
-node --test 'tests/*.test.mjs' || failed+=(unit)
-
 if [ "${#failed[@]}" -ne 0 ]; then
     echo "==== FAILED: ${failed[*]}" >&2
     exit 1

@@ -1,7 +1,7 @@
 {{- /* One self-contained page per city: config, data, CSS and JS are
-       inlined, exactly like the original standalone page. Only Leaflet and
-       the tiles are external; in production the tiles come from the site's
-       own /tuiles/ proxy (see DEPLOY.md).
+       inlined, like the original standalone page. Only Leaflet and the
+       tiles are external; tiles come keyless from IGN's Géoplateforme (the
+       "tuiles" URL in config.json).
        html/template strips JS comments, so the config banner is emitted as
        data. */ -}}
 {{- $ville := .Params.ville -}}
@@ -32,7 +32,6 @@
 {{- end -}}
 {{- $css := resources.Get "css/observatoire.css" -}}
 {{- $js := resources.Get "js/observatoire.js" -}}
-{{- $cfgJSON := partial "config-tuiles.html" (dict "json" $cfgRes.Content "cfg" $cfg) -}}
 <!doctype html>
 <html lang="fr" data-theme="light">
 <head>
@@ -44,7 +43,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 {{ "/* =====================================================================\n   CONFIGURATION (modifiable)\n   ===================================================================== */" | safeJS }}
-window.CITY_CONFIG = {{ $cfgJSON | safeJS }};
+window.CITY_CONFIG = {{ strings.TrimSuffix "\n" $cfgRes.Content | safeJS }};
 </script>
 <script>window.CITY_DATA = {{ strings.TrimSuffix "\n" $dataRes.Content | safeJS }};</script>
 <style>
