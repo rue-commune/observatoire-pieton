@@ -12,11 +12,16 @@ services:
     working_dir: /devsrc
     volumes:
       - ..:/devsrc
+    # Local secrets such as HUGO_PARAMS_CARTOKEY; git-ignored, optional.
+    env_file:
+      - path: ../.env
+        required: false
 
-  # Production-style build into public/.
+  # Production build into public/ (unminified: minifying saves ~1%
+  # and would stop the output matching the original byte for byte).
   dev-build:
     extends: dev-base
-    command: ["hugo", "--gc", "--minify", "--cleanDestinationDir"]
+    command: ["hugo", "--gc", "--cleanDestinationDir"]
 
   # Verification gate: a full render held in memory, so public/ is left
   # alone, with warnings promoted to failures.

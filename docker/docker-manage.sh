@@ -35,7 +35,7 @@ case "$action" in
         maybe_build_nocache dev-build
         # Arguments replace a service's command, so restate it here.
         docker_compose run --rm --build dev-build \
-            hugo --gc --minify --cleanDestinationDir "$@"
+            hugo --gc --cleanDestinationDir "$@"
         ;;
     test)
         maybe_build_nocache dev-test
