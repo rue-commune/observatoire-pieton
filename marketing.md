@@ -64,8 +64,8 @@ L'observatoire s'appelle **5 mètres** ; son adresse est **5metres.fr**.
 
 - Le nom porte la règle elle-même. Tout le monde le comprend sans
   explication, il tient sur un autocollant et fonctionne comme mot-dièse.
-  Certaines plateformes distinguent #5mètres et #5metres : il faudra en
-  choisir un et s'y tenir.
+  Certaines plateformes distinguent #5mètres et #5metres : en interne, il faudra en
+  choisir un et s'y tenir.  Par contre, les deux marchent et sont configurés sur le plan informatique.
 - Il n'est attaché à aucune ville, ce qui permet le cadrage national.
 - `observatoire-pieton.rue-commune.org` était long, difficile à dicter
   (deux traits d'union) et trop étroit pour accueillir d'autres
@@ -81,8 +81,8 @@ d'écriture est donc :
   avec l'accent.
 
 Pour ceux qui tapent l'adresse de mémoire, nous enregistrons aussi
-`5mètres.fr` (le `.fr` accepte les accents) et `cinqmetres.fr`, qui
-redirigent vers `5metres.fr`.
+`5mètres.fr` (le `.fr` accepte les accents).  Pour 11 € de plus HT, on pourrait ajouter `cinqmetres.fr`.
+En tout cas, tout redirige vers `5metres.fr`.
 
 Les domaines sont enregistrés au nom de Rue Commune, pour que le projet
 ne dépende d'aucun bénévole en particulier.
@@ -96,13 +96,10 @@ résultats de recherche, les partages et la presse, et le nom sans ville
 apparaît comme éditeur (« un observatoire Rue Commune »), ce qui donne
 aux données leur crédibilité.
 
-D'autres observatoires suivront, sur d'autres sujets. Chacun aura son
-propre nom de campagne, et `observatoire.rue-commune.org` pourra les
-rassembler.
-
 ## Ouvrir le site à d'autres villes
 
-Le site est construit ville par ville : chaque territoire a ses données,
+Le site est construit ville par ville.  Pour l'instant, seul Nantes Métropole y est représentée.
+Mais rien n'empêche que chaque territoire a ses données,
 ses textes et sa page, avec le même outil. Une fois la chaîne de calcul
 en place, **ajouter une ville nous coûte peu** :
 
@@ -116,7 +113,8 @@ passages piétons et ses emplacements de stationnement, sous une forme
 exploitable. Sans ces données, le coût change de nature : il faudrait
 les collecter, et ce n'est pas notre rôle. Chaque nouvelle source
 demande aussi une adaptation initiale (format, champs, découpage), puis
-presque plus rien.
+presque plus rien.  Par contre, certaines association comptent à la main, et nous pourrions 
+accepter leurs données également.
 
 **Ce que nous apportons à une ville :**
 
@@ -142,7 +140,7 @@ territoire garde la main sur son propre débat.
 présenter côte à côte : part de passages conformes, nombre de places
 situées dans la zone (au moins, puisque la méthode retient 4 m). Elle
 illustre l'argument central sans commentaire : même loi, situations
-différentes, à lire avec la couverture des données de chaque ville.
+différentes, à lire avec la couverture des données de chaque ville.  À réaliser, mais pas difficile.
 
 **Prudence sur les comparaisons.** La méthode est la même, mais pas la
 couverture des données. Nous ne comptons que les places matérialisées que
@@ -169,23 +167,3 @@ ses données couvrent, et ne présente jamais de classement.
   le piéton.
 - Échéance : 31 décembre 2026. Où en est votre ville ?
 - Données publiques, méthode publique : chacun peut vérifier.
-
-## Points ouverts
-
-- Éditeur affiché : le site crédite aujourd'hui le Collectif Paris Piétons
-  (pied de page, logo). Il faut décider comment Rue Commune et Paris
-  Piétons apparaissent sur 5metres.fr avant de communiquer.
-- Texte de loi : le résumé ci-dessus doit être vérifié mot à mot sur
-  Légifrance avant toute citation publique.
-- Cohérence avec le site : le premier point des limites
-  (`assets/villes/nantes/config.json`) dit que, faute de mesurer le
-  stationnement non marqué, la part de passages conformes est « sans
-  doute surestimée ». Avec notre lecture de la loi, ce stationnement n'est
-  pas concerné : il ne fausse pas la conformité, il laisse seulement de
-  côté une question de visibilité. Reformuler en ce sens.
-- Liste des villes à ajouter en priorité, selon les données ouvertes
-  disponibles et les associations locales prêtes à s'en servir.
-- Texte type des pages « sans évaluation » et règle pour renvoyer vers
-  une association locale.
-- Contenu et mise en forme de la page nationale.
-- Plan de communication autour du 31 décembre 2026.
