@@ -167,3 +167,9 @@ ses données couvrent, et ne présente jamais de classement.
   le piéton.
 - Échéance : 31 décembre 2026. Où en est votre ville ?
 - Données publiques, méthode publique : chacun peut vérifier.
+
+## À faire
+
+* Prévoir notre communication immédiate
+* Prévoir notre communication de début janvier 2027
+* Prévoir notre communication à d'autres associations
