@@ -10,10 +10,10 @@ description: "La règle des 5 mètres en bref : pourquoi la loi LOM interdit l
 - **La règle :** depuis la loi LOM de 2019, on ne peut plus aménager de place de stationnement pour les voitures, motos ou camionnettes dans les **5 mètres avant un passage piéton**.
 - **Pourquoi :** une voiture garée là cache le piéton, surtout un enfant ou une personne en fauteuil roulant, au conducteur qui arrive. Sans elle, **chacun voit l'autre plus tôt**.
 - **Quand :** toutes ces places doivent avoir disparu au plus tard le **31 décembre 2026**.
-- **À Nantes :** d'après les données ouvertes, **plus de 3 000 places de stationnement** sont encore à supprimer dans la métropole pour respecter la loi. La [carte]({{< relref "/_index.md" >}}) montre où.
+- **À Nantes :** d'après les données ouvertes, **{{< donnees "places" >}} places de stationnement** sont encore à supprimer dans la métropole pour respecter la loi. La [carte]({{< relref "/_index.md" >}}) montre où.
 - **5 mètres, c'est un minimum :** dans les rues à 50 km/h, le Cerema conseille de dégager 7 à 10 mètres.
 
-{{< figure src="/images/lom/cerema-obligatoire.jpg" link="/images/lom/cerema-obligatoire.jpg" width="858" height="354" alt="Schéma vu du ciel d'une rue à sens unique pour les voitures, avec une voie cyclable dans l'autre sens, et un passage piéton. Pour chaque sens, la place de stationnement située juste avant le passage, sur 5 mètres, est barrée d'une croix rouge. Deux cônes rouges montrent que la voiture et le vélo qui arrivent voient ainsi les piétons qui attendent sur les trottoirs." caption="Ce que la loi impose : pas de place de stationnement dans les 5 mètres avant le passage, du côté d'où arrivent les véhicules. Schéma : Cerema (cliquer pour agrandir)." >}}
+{{< figure src="/images/lom/cerema-obligatoire.jpg" link="/images/lom/cerema-obligatoire.jpg" width="858" height="354" alt="Schéma vu du ciel d'une rue à sens unique pour les voitures, avec une voie cyclable dans l'autre sens, et un passage piéton. Pour chaque sens, la place de stationnement située juste avant le passage, sur 5 mètres, est barrée d'une croix rouge. Deux cônes rouges montrent que la voiture et le vélo qui arrivent voient ainsi les piétons qui attendent sur les trottoirs." caption="Ce que la loi impose : pas de place de stationnement dans les 5 mètres avant le passage, du côté d'où arrivent les véhicules. Cliquer pour agrandir." attr="Schéma : Cerema" attrlink="https://www.cerema.fr/" >}}
 
 ## La règle des 5 mètres
 
@@ -60,11 +60,11 @@ Les 5 mètres libérés ne sont pas perdus. On peut y installer :
 - **La peinture ne suffit pas toujours.** Là où les voitures continuent de se garer, il faut des potelets (petits poteaux), des arceaux ou une avancée de trottoir.
 - **Certaines places comptent beaucoup**, comme les places pour personnes handicapées ou de livraison. Elles doivent être déplacées à proximité, pas simplement supprimées.
 
-{{< figure src="/images/lom/cerema-recommande.jpg" link="/images/lom/cerema-recommande.jpg" width="858" height="354" alt="Le même schéma de rue, avec trois zones vertes « espace neutralisé » de 5 à 10 mètres : avant le passage pour les voitures, et des deux côtés du passage le long de la voie cyclable. La voiture et le vélo qui arrivent voient largement les trottoirs." caption="Ce que recommande le Cerema : dégager de 5 à 10 mètres, et pas seulement avant le passage. Schéma : Cerema (cliquer pour agrandir)." >}}
+{{< figure src="/images/lom/cerema-recommande.jpg" link="/images/lom/cerema-recommande.jpg" width="858" height="354" alt="Le même schéma de rue, avec trois zones vertes « espace neutralisé » de 5 à 10 mètres : avant le passage pour les voitures, et des deux côtés du passage le long de la voie cyclable. La voiture et le vélo qui arrivent voient largement les trottoirs." caption="Ce que recommande le Cerema : dégager de 5 à 10 mètres, et pas seulement avant le passage. Cliquer pour agrandir." attr="Schéma : Cerema" attrlink="https://www.cerema.fr/" >}}
 
 ## Et à Nantes ?
 
-Selon Nantes Métropole, le chantier concerne environ **2 500 passages piétons** dans la métropole, dont **927 à Nantes**, avec un budget de **5 millions d'euros**. D'après nos calculs sur les données ouvertes, plus de 3 000 places de stationnement doivent encore disparaître pour respecter la loi. Les travaux combinent marquage au sol, potelets, arceaux à vélos, avancées de trottoir et plantations.
+Selon Nantes Métropole, le chantier concerne environ **2 500 passages piétons** dans la métropole, dont **927 à Nantes**, avec un budget de **5 millions d'euros**. D'après nos calculs sur les données ouvertes du {{< donnees "date" >}}, {{< donnees "places" >}} places de stationnement doivent encore disparaître pour respecter la loi. Les travaux combinent marquage au sol, potelets, arceaux à vélos, avancées de trottoir et plantations.
 
 La métropole n'indique pas, en revanche, combien de passages sont déjà en conformité. C'est ce que cet observatoire cherche à mesurer : la [carte]({{< relref "/_index.md" >}}) montre, passage par passage, où des places de stationnement restent dans les 5 mètres, et la [méthodologie]({{< relref "methodologie" >}}) explique comment nous les comptons.
 
