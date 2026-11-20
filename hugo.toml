@@ -10,3 +10,15 @@ disableKinds = ["taxonomy", "term", "section", "page", "RSS", "sitemap", "404"]
 defaultContentLanguage = "fr"
 # Keep the page diffable against the original standalone file.
 disableHugoGeneratorInject = true
+
+# Publisher, shown in the header, footer and credits for every city.
+[params.editeur]
+  nom = "Rue Commune"
+  url = "https://www.rue-commune.org/"
+  mentions = "https://www.rue-commune.org/mentions-legales/"
+
+# The observatory's concept and original code were kindly contributed by
+# Collectif Paris Piétons; keep crediting them in the footer and credits.
+[params.origine]
+  nom = "Collectif Paris Piétons"
+  url = "https://parispietons.fr/"

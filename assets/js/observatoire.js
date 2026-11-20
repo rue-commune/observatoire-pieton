@@ -29,8 +29,6 @@
   /* ---------- Habillage ---------- */
   var AREA = C.territoire, UNIT = C.unite || { one: "commune", many: "communes", the: "la commune" };
   $("titre").textContent = C.titre; $("sous-titre").textContent = C.sousTitre;
-  if (C.logoUrl) { $("logo").src = C.logoUrl; $("logo").alt = C.siteNom; } else $("logo").remove();
-  $("logo-link").href = C.siteUrl || "#";
   $("k-title").textContent = "Conformité à la loi, " + AREA;
   $("rank-title").textContent = "Classement des " + UNIT.many;
   $("pl-reset").textContent = "Revenir à " + C.territoireCourt;
@@ -38,7 +36,6 @@
   var snap = "Photographie au " + fmtDate.format(pd(D.generated)) + ", d'après les données ouvertes publiées par " + C.producteur + ".";
   $("k-snap").textContent = snap;
   $("m-snapshot").innerHTML = "Cette carte est une <strong>photographie à un instant donné</strong> : elle reflète l'état des données de stationnement publiées par " + esc(C.producteur) + " au moment du calcul (" + esc(fmtDate.format(pd(D.generated))) + "), et ne tient pas compte des travaux réalisés depuis.";
-  $("footer").innerHTML = 'Observatoire citoyen réalisé par le <a href="' + esc(C.siteUrl) + '">' + esc(C.siteNom) + "</a> à partir des données ouvertes de " + esc(C.producteur) + " (" + esc(C.licence || "ODbL") + ").";
   $("m-method").innerHTML = li(C.methode || []);
   $("m-limits").innerHTML = li(C.limites || []);
   $("m-data").innerHTML = (C.sources || []).map(function (s) { return '<li><a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.nom) + "</a>" + (s.date ? ", données du " + esc(fmtDate.format(pd(s.date))) : "") + "</li>"; }).join("") +

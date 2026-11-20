@@ -101,6 +101,12 @@ its own overhead and loses shared context.
 ## Layout
 
 - `content/_index.md`: the home page; `ville:` selects the city.
+- `hugo.toml` `[params.editeur]` and `[params.origine]`: the publisher
+  (Rue Commune) and the origin credit (Collectif Paris Piétons, who
+  contributed the concept and original code). The header, footer and
+  "À propos et crédits" section use them; keep the origin credit.
+  Branding (palette, fonts, brand mark, `static/favicon.svg`) follows
+  the Rue Commune site in `../web`.
 - `assets/villes/<ville>/config.json`: hand-maintained city settings and
   texts, inlined verbatim (key order matters to the app; don't
   re-serialise it). `tuiles` is the keyless IGN Plan IGN v2 tile URL.

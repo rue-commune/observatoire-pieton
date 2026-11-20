@@ -1,11 +1,14 @@
 :root {
   color-scheme: light;
-  --bg: #f6f5f1; --surface: #ffffff; --surface-2: #f0efec;
-  --ink: #161614; --ink-2: #52514e; --ink-3: #7a7974; --line: #e2e0da;
-  --brand: #1d5c4d;
+  /* Rue Commune palette (../web/styles.css): cream, paper, navy, coral.
+     The status colours below are semantic and stay independent of it. */
+  --bg: #f5f0e6; --surface: #fffdf8; --surface-2: #efe8da;
+  --ink: #102d36; --ink-2: #3e5862; --ink-3: #5f737a; --line: #e0d8c8;
+  --brand: #173f51; --accent: #e9583e; --cream: #f5f0e6;
   --ok: #0f9d8a; --mid: #e8890c; --ko: #c22f2f;
   --r0: #fdf1f0; --r1: #f7c6c0; --r2: #ee958c; --r3: #dd5f55; --r4: #bf322b; --r5: #7f1712;
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --display: "Manrope", var(--font);
 }
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.45; }
@@ -14,9 +17,10 @@ button { font: inherit; }
 .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .site-header { display: flex; align-items: center; gap: 14px; padding: 10px 20px; background: var(--surface); border-bottom: 1px solid var(--line); min-height: 64px; }
-.site-header img { height: 44px; width: 44px; object-fit: contain; }
-.site-header .titles { flex: 1; min-width: 0; }
-.site-header h1 { font-size: 1.15rem; margin: 0; line-height: 1.2; }
+.site-header .brand { display: inline-flex; align-items: center; gap: 9px; flex: none; color: var(--ink); text-decoration: none; font-family: var(--display); font-size: 15px; font-weight: 800; line-height: .9; letter-spacing: -.05em; }
+.brand-mark { width: 40px; height: 40px; color: var(--accent); }
+.site-header .titles { flex: 1; min-width: 0; padding-left: 14px; border-left: 1px solid var(--line); }
+.site-header h1 { font-family: var(--display); font-size: 1.15rem; margin: 0; line-height: 1.2; letter-spacing: -.02em; }
 .site-header p { margin: 2px 0 0; color: var(--ink-2); font-size: .88rem; }
 .site-header nav { display: flex; gap: 16px; font-size: .9rem; white-space: nowrap; }
 .site-header nav a { text-decoration: none; font-weight: 600; }
@@ -25,7 +29,7 @@ button { font: inherit; }
 .panel { position: relative; overflow-y: auto; background: var(--surface); border-right: 1px solid var(--line); padding: 18px 20px 28px; }
 #map { height: 100%; width: 100%; background: #e9e7e1; }
 .map-wrap { position: relative; height: 100%; }
-.embed .site-header, .embed .site-footer, .embed #methodologie { display: none; }
+.embed .site-header, .embed .site-footer, .embed #methodologie, .embed #credits { display: none; }
 .embed .layout { height: 100vh; }
 
 section.block { padding: 16px 0; border-top: 1px solid var(--line); }
@@ -33,7 +37,7 @@ section.block:first-child { border-top: 0; padding-top: 0; }
 h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); margin: 0 0 10px; font-weight: 700; }
 
 .hero { display: flex; align-items: baseline; gap: 8px; }
-.hero .num { font-size: 3rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
+.hero .num { font-family: var(--display); font-size: 3rem; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; }
 .hero .den { font-size: 1.1rem; color: var(--ink-2); font-weight: 600; }
 .hero-label { color: var(--ink-2); margin: 4px 0 12px; }
 .bar { height: 14px; background: var(--surface-2); border-radius: 7px; overflow: hidden; display: flex; gap: 2px; }
@@ -99,7 +103,7 @@ h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color:
 .choro-legend .ends { display: flex; justify-content: space-between; color: var(--ink-2); }
 .choro-legend[hidden], .zoom-hint[hidden] { display: none; }
 .zoom-hint { position: absolute; z-index: 800; left: 50%; top: 12px; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--line); border-radius: 99px; padding: 6px 14px; font-size: .85rem; box-shadow: 0 2px 8px rgba(0,0,0,.08); text-align: center; max-width: calc(100% - 120px); }
-.com-label { background: none; border: 0; box-shadow: none; font-weight: 700; font-size: 11px; color: #161614; text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff; text-align: center; white-space: nowrap; }
+.com-label { background: none; border: 0; box-shadow: none; font-weight: 700; font-size: 11px; color: var(--ink); text-shadow: 0 0 3px #fff, 0 0 3px #fff, 0 0 3px #fff; text-align: center; white-space: nowrap; }
 .com-label small { display: block; font-weight: 600; font-size: 10.5px; }
 
 .leaflet-popup-content { margin: 12px 14px; font-family: var(--font); font-size: .9rem; min-width: 230px; }
@@ -111,12 +115,21 @@ h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color:
 .pop .links { margin-top: 8px; font-size: .85rem; display: flex; gap: 12px; flex-wrap: wrap; }
 
 #methodologie { background: var(--surface); border-top: 1px solid var(--line); }
-#methodologie .inner { max-width: 860px; margin: 0 auto; padding: 32px 20px; }
-#methodologie h2 { font-size: 1.2rem; text-transform: none; letter-spacing: 0; color: var(--ink); }
-#methodologie h3 { font-size: 1rem; margin: 22px 0 6px; }
-#methodologie p, #methodologie li { color: var(--ink-2); }
-.site-footer { text-align: center; font-size: .82rem; color: var(--ink-2); padding: 18px 20px 26px; }
+#credits { background: var(--bg); border-top: 1px solid var(--line); }
+#methodologie .inner, #credits .inner { max-width: 860px; margin: 0 auto; padding: 32px 20px; }
+#methodologie h2, #credits h2 { font-family: var(--display); font-size: 1.3rem; text-transform: none; letter-spacing: -.02em; color: var(--ink); }
+#methodologie h3, #credits h3 { font-family: var(--display); font-size: 1rem; margin: 22px 0 6px; }
+#methodologie p, #methodologie li, #credits p, #credits li { color: var(--ink-2); }
+.site-footer { text-align: center; font-size: .82rem; color: var(--cream); background: var(--ink); padding: 20px 20px 26px; }
+.site-footer p { margin: 0 0 6px; }
+.site-footer a { color: var(--cream); }
 
+/* Between the mobile breakpoint and ~1000px the wordmark pushes the title
+   onto two lines, making the header taller than the 65px that .layout
+   subtracts; keep only the mark there (the link keeps its aria-label). */
+@media (min-width: 861px) and (max-width: 1000px) {
+  .site-header .brand span { display: none; }
+}
 @media (max-width: 860px) {
   .site-header { padding: 10px 16px; flex-wrap: wrap; }
   .site-header nav { width: 100%; }

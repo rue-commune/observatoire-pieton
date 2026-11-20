@@ -30,6 +30,11 @@
     {{- errorf "%s: %s contains </script or <!--; escape < as \\u003c" $ville .Name -}}
   {{- end -}}
 {{- end -}}
+{{- $ed := site.Params.editeur -}}
+{{- $or := site.Params.origine -}}
+{{- if not (and $ed.nom $ed.url $ed.mentions $or.nom $or.url) -}}
+  {{- errorf "hugo.toml: params.editeur and params.origine must be complete (publisher and origin credit)" -}}
+{{- end -}}
 {{- $css := resources.Get "css/observatoire.css" -}}
 {{- $js := resources.Get "js/observatoire.js" -}}
 <!doctype html>
@@ -39,6 +44,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ $cfg.titre }}</title>
 <meta name="description" content="{{ .Description }}">
+<meta name="theme-color" content="#f5f0e6">
+<link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
+{{- /* Same fonts as the Rue Commune site (../web/styles.css). */}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -52,9 +63,13 @@ window.CITY_CONFIG = {{ strings.TrimSuffix "\n" $cfgRes.Content | safeJS }};
 <body>
 
 <header class="site-header">
-  <a id="logo-link" href="#"><img id="logo" alt="" src="" onerror="this.remove()"></a>
+  <a class="brand" href="{{ $ed.url }}" aria-label="{{ $ed.nom }}, site de l'association">
+    {{- /* Brand mark from the Rue Commune site (../web/index.html). */}}
+    <svg class="brand-mark" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="25" fill="currentColor"/><path d="M15 34V18h11.5c6.6 0 10.5 3 10.5 8 0 3.4-1.9 5.8-5.2 7l5.8 7h-7.2l-5-6H21v6h-6Zm6-5h5.1c3.1 0 4.7-1 4.7-3s-1.6-3-4.7-3H21v6Z" fill="#f5f0e6"/></svg>
+    <span>Rue<br>Commune</span>
+  </a>
   <div class="titles"><h1 id="titre"></h1><p id="sous-titre"></p></div>
-  <nav><a href="#methodologie">Méthodologie</a></nav>
+  <nav><a href="#methodologie">Méthodologie</a><a href="#credits">Crédits</a></nav>
 </header>
 
 <main class="layout">
@@ -160,7 +175,25 @@ window.CITY_CONFIG = {{ strings.TrimSuffix "\n" $cfgRes.Content | safeJS }};
     <ul id="m-limits"></ul>
   </div>
 </section>
-<footer class="site-footer" id="footer"></footer>
+<section id="credits">
+  <div class="inner">
+    <h2>À propos et crédits</h2>
+    <p>Cet observatoire citoyen est publié par <a href="{{ $ed.url }}">{{ $ed.nom }}</a>, association nantaise indépendante qui défend une métropole marchable et cyclable.</p>
+    <p>Il repose sur un concept et sur un code aimablement offerts par le <a href="{{ $or.url }}">{{ $or.nom }}</a>. Merci à elles et à eux&nbsp;!</p>
+
+    <h3>Données, fond de carte et logiciels</h3>
+    <ul>
+      <li>Données ouvertes de {{ $cfg.producteur }} ({{ $cfg.licence | default "ODbL" }}) et des autres sources listées dans la <a href="#methodologie">méthodologie</a>.</li>
+      <li>Sens de circulation et noms des rues&nbsp;: © les contributeurs d'<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</li>
+      <li>Fond de carte&nbsp;: Plan IGN, <a href="https://www.ign.fr/">IGN</a> – <a href="https://cartes.gouv.fr/">Géoplateforme</a>.</li>
+      <li>Carte interactive&nbsp;: <a href="https://leafletjs.com/">Leaflet</a>.</li>
+    </ul>
+  </div>
+</section>
+<footer class="site-footer">
+  <p>Observatoire citoyen réalisé par <a href="{{ $ed.url }}">{{ $ed.nom }}</a> à partir des données ouvertes de {{ $cfg.producteur }} ({{ $cfg.licence | default "ODbL" }}).</p>
+  <p>D'après un concept et un code aimablement offerts par le <a href="{{ $or.url }}">{{ $or.nom }}</a> · <a href="#credits">Crédits</a> · <a href="{{ $ed.mentions }}">Mentions légales</a></p>
+</footer>
 
 <script>
 {{ $js.Content | safeJS }}</script>

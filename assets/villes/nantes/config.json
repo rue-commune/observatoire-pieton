@@ -1,8 +1,5 @@
 {
  "echeance": "2026-12-31",
- "logoUrl": "https://parispietons.fr/wp-content/uploads/2026/05/cropped-Logo-sans-fond-270x270.png",
- "siteUrl": "https://parispietons.fr/",
- "siteNom": "Collectif Paris Piétons",
  "tuiles": "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0&LAYER=GEOGRAPHICALGRIDSYSTEMS.PLANIGNV2&STYLE=normal&FORMAT=image/png&TILEMATRIXSET=PM_0_19&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}",
  "pointZoom": 14,
  "labelZoom": 11,
