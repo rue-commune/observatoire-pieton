@@ -121,6 +121,10 @@ h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color:
 .page h3 { font-family: var(--display); font-size: .95rem; margin: 16px 0 4px; color: var(--ink); }
 .page p, .page li { color: var(--ink-2); }
 .page blockquote { margin: 12px 0; padding: 2px 16px; border-left: 3px solid var(--accent); background: var(--surface-2); }
+.page figure { margin: 18px 0; }
+.page figure img { display: block; max-width: 100%; height: auto; }
+.page figcaption { margin-top: 6px; font-size: .85rem; color: var(--ink-3); }
+.page figcaption p { margin: 0; }
 .site-footer { text-align: center; font-size: .82rem; color: var(--cream); background: var(--ink); padding: 20px 20px 26px; }
 .site-footer p { margin: 0 0 6px; }
 .site-footer a { color: var(--cream); }
