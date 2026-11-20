@@ -13,6 +13,7 @@ no Functions and no secrets.
 | Build command | `hugo --gc` |
 | Build output directory | `public` |
 | Root directory | `/` |
+| Custom domain | `5metres.fr`; keep equal to `baseURL` in `hugo.toml` |
 
 Environment variables, for both Production and Preview:
 

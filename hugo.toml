@@ -1,6 +1,6 @@
-# Provisional: set to the production domain once known. The page itself
-# uses no absolute URLs, so the value does not affect it.
-baseURL = "https://observatoire-pieton.pages.dev/"
+# Production domain. The page itself uses no absolute URLs, so the value
+# does not affect it.
+baseURL = "https://5metres.fr/"
 locale = "fr"
 title = "Observatoire piéton"
 

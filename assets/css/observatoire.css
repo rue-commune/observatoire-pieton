@@ -29,8 +29,6 @@ button { font: inherit; }
 .panel { position: relative; overflow-y: auto; background: var(--surface); border-right: 1px solid var(--line); padding: 18px 20px 28px; }
 #map { height: 100%; width: 100%; background: #e9e7e1; }
 .map-wrap { position: relative; height: 100%; }
-.embed .site-header, .embed .site-footer, .embed #methodologie, .embed #credits { display: none; }
-.embed .layout { height: 100vh; }
 
 section.block { padding: 16px 0; border-top: 1px solid var(--line); }
 section.block:first-child { border-top: 0; padding-top: 0; }
@@ -131,16 +129,20 @@ h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color:
   .site-header .brand span { display: none; }
 }
 @media (max-width: 860px) {
-  .site-header { padding: 10px 16px; flex-wrap: wrap; }
-  .site-header nav { width: 100%; }
+  /* Brand and nav share the first row and the title gets the full width
+     below; the subtitle, which restates the title, is dropped. */
+  .site-header { padding: 10px 16px; flex-wrap: wrap; gap: 8px 14px; }
+  .site-header .brand { order: 1; }
+  .site-header nav { order: 2; margin-left: auto; }
+  .site-header .titles { order: 3; flex-basis: 100%; padding-left: 0; border-left: 0; }
+  .site-header h1 { font-size: 1.05rem; }
+  .site-header p { display: none; }
   .layout { display: flex; flex-direction: column; height: auto; }
   .panel { display: contents; }
   .panel > section { background: var(--surface); padding: 16px; border-top: 1px solid var(--line); }
   #kpi { order: 1; }
   .map-wrap { order: 2; height: 62vh; min-height: 380px; }
   #s-filtres { order: 3; } #s-rank { order: 4; } #s-places { order: 5; } #s-search { order: 6; } #s-export { order: 7; }
-  .embed .layout { height: auto; }
-  .embed .map-wrap { height: 460px; min-height: 0; }
 }
 /* Plan IGN v2 is a busy, saturated basemap: mute it so the red/orange/green
    crossing markers and the choropleth stay readable. Only the tile pane is

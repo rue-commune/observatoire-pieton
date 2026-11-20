@@ -1,19 +1,6 @@
 (function () {
   "use strict";
   var C = window.CITY_CONFIG, D = window.CITY_DATA;
-  var params = new URLSearchParams(location.search);
-  var EMBED = params.has("embed");
-  if (EMBED) document.body.classList.add("embed");
-  function postHeight() {
-    if (!EMBED || window.parent === window) return;
-    var mobile = window.matchMedia("(max-width: 860px)").matches;
-    var h = mobile ? Math.ceil(document.body.getBoundingClientRect().height) : null;
-    try { window.parent.postMessage({ type: "covis-height", height: h }, "*"); } catch (e) {}
-  }
-  if (EMBED) {
-    if (window.ResizeObserver) new ResizeObserver(postHeight).observe(document.body);
-    window.addEventListener("resize", postHeight); window.addEventListener("load", postHeight);
-  }
 
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
