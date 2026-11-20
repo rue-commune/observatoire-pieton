@@ -11,22 +11,15 @@
   function pd(s) { var m = String(s || "").match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null; }
   function norm(s) { return String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[-']/g, " ").replace(/\s+/g, " ").trim(); }
   function slug(s) { return norm(s).replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
-  function li(a) { return a.map(function (t) { return "<li>" + t + "</li>"; }).join(""); }
 
   /* ---------- Habillage ---------- */
   var AREA = C.territoire, UNIT = C.unite || { one: "commune", many: "communes", the: "la commune" };
-  $("titre").textContent = C.titre; $("sous-titre").textContent = C.sousTitre;
   $("k-title").textContent = "Conformité à la loi, " + AREA;
   $("rank-title").textContent = "Classement des " + UNIT.many;
   $("pl-reset").textContent = "Revenir à " + C.territoireCourt;
   $("cat-1-sub").textContent = C.voituresDetail || "payant, gratuit, réservé…";
   var snap = "Photographie au " + fmtDate.format(pd(D.generated)) + ", d'après les données ouvertes publiées par " + C.producteur + ".";
   $("k-snap").textContent = snap;
-  $("m-snapshot").innerHTML = "Cette carte est une <strong>photographie à un instant donné</strong> : elle reflète l'état des données de stationnement publiées par " + esc(C.producteur) + " au moment du calcul (" + esc(fmtDate.format(pd(D.generated))) + "), et ne tient pas compte des travaux réalisés depuis.";
-  $("m-method").innerHTML = li(C.methode || []);
-  $("m-limits").innerHTML = li(C.limites || []);
-  $("m-data").innerHTML = (C.sources || []).map(function (s) { return '<li><a href="' + esc(s.url) + '" target="_blank" rel="noopener">' + esc(s.nom) + "</a>" + (s.date ? ", données du " + esc(fmtDate.format(pd(s.date))) : "") + "</li>"; }).join("") +
-    "<li>Calcul réalisé le " + esc(fmtDate.format(pd(D.generated))) + " sur " + fmt.format(D.counts.passages) + " passages et " + fmt.format(D.counts.emplacements) + " emplacements de stationnement.</li>";
   $("exp-note").textContent = "Le fichier contient les passages affichés sur la carte : choisissez d'abord " + (UNIT.fem ? "une " : "un ") + UNIT.one + " ou un quartier, et les statuts à vérifier dans la légende. Pour chaque passage : " + (D.streets ? "rue traversée, carrefour ou rues encadrantes, " : "") + UNIT.one + ", quartier, statut, places en cause, coordonnées, lien vers sa fiche et vers Street View. Le GeoJSON s'ouvre dans uMap, QGIS, geojson.io ou les applications de terrain ; le CSV, dans un tableur, avec des colonnes vides pour noter les constats.";
 
   /* ---------- Données ---------- */

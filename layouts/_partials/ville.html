@@ -1,0 +1,35 @@
+{{- /* Loads and validates the city selected by the page's "ville" front
+       matter. Returns a dict: cfgRes, dataRes (the resources, for inlining
+       verbatim), cfg and data (unmarshalled). */ -}}
+{{- $ville := .Params.ville -}}
+{{- $cfgRes := resources.Get (printf "villes/%s/config.json" $ville) -}}
+{{- $dataRes := resources.Get (printf "villes/%s/data.json" $ville) -}}
+{{- if not (and $cfgRes $dataRes) -}}
+  {{- errorf "%s: missing assets/villes/%s/config.json or data.json" .File.Path $ville -}}
+{{- end -}}
+{{- $cfg := $cfgRes | transform.Unmarshal -}}
+{{- /* data.json is regenerated periodically and inlined verbatim, so a bad
+       update would otherwise ship a broken page: fail the build instead.
+       Unmarshal also rejects invalid JSON. */ -}}
+{{- $data := $dataRes | transform.Unmarshal -}}
+{{- range slice "generated" "labels" "communes" "quartiers" "rows" "counts" "geo" "removal" -}}
+  {{- if eq (index $data .) nil -}}
+    {{- errorf "%s: data.json lacks required key %q (or it is null)" $ville . -}}
+  {{- end -}}
+{{- end -}}
+{{- if not (findRE `^\d{4}-\d{2}-\d{2}$` $data.generated) -}}
+  {{- errorf "%s: data.json generated=%q is not YYYY-MM-DD" $ville $data.generated -}}
+{{- end -}}
+{{- $_ := time.AsTime $data.generated -}}{{/* rejects impossible dates */}}
+{{- /* Inlined JSON must not be able to close or confuse its <script>. */ -}}
+{{- range slice $cfgRes $dataRes -}}
+  {{- if findRE `(?i)</script|<!--` .Content 1 -}}
+    {{- errorf "%s: %s contains </script or <!--; escape < as \\u003c" $ville .Name -}}
+  {{- end -}}
+{{- end -}}
+{{- $ed := site.Params.editeur -}}
+{{- $or := site.Params.origine -}}
+{{- if not (and $ed.nom $ed.url $ed.mentions $or.nom $or.url) -}}
+  {{- errorf "hugo.toml: params.editeur and params.origine must be complete (publisher and origin credit)" -}}
+{{- end -}}
+{{- return dict "cfgRes" $cfgRes "dataRes" $dataRes "cfg" $cfg "data" $data -}}

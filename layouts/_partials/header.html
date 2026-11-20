@@ -1,0 +1,19 @@
+{{- /* Context: dict "page" (the current page), "titre", "sousTitre". */ -}}
+{{- $ed := site.Params.editeur -}}
+{{- $methodo := site.GetPage "/methodologie" -}}
+{{- if not $methodo -}}
+  {{- errorf "content/methodologie.md is missing; the header links to it" -}}
+{{- end -}}
+<header class="site-header">
+  <a class="brand" href="{{ $ed.url }}" aria-label="{{ $ed.nom }}, site de l'association">
+    {{- /* Brand mark from the Rue Commune site (../web/index.html). */}}
+    <svg class="brand-mark" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="25" fill="currentColor"/><path d="M15 34V18h11.5c6.6 0 10.5 3 10.5 8 0 3.4-1.9 5.8-5.2 7l5.8 7h-7.2l-5-6H21v6h-6Zm6-5h5.1c3.1 0 4.7-1 4.7-3s-1.6-3-4.7-3H21v6Z" fill="#f5f0e6"/></svg>
+    <span>Rue<br>Commune</span>
+  </a>
+  <div class="titles"><h1 id="titre">{{ .titre }}</h1><p id="sous-titre">{{ .sousTitre }}</p></div>
+  <nav>
+    {{- if not .page.IsHome }}<a href="{{ site.Home.RelPermalink }}">Carte</a>{{ end }}
+    {{- if not (.page.Eq $methodo) }}<a href="{{ $methodo.RelPermalink }}">Méthodologie</a>{{ end -}}
+    <a href="{{ site.Home.RelPermalink }}#credits">Crédits</a>
+  </nav>
+</header>

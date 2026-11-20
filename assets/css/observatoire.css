@@ -112,11 +112,14 @@ h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color:
 .pop .meta { color: var(--ink-2); font-size: .82rem; margin-top: 6px; }
 .pop .links { margin-top: 8px; font-size: .85rem; display: flex; gap: 12px; flex-wrap: wrap; }
 
-#methodologie { background: var(--surface); border-top: 1px solid var(--line); }
+#methodologie { background: var(--surface); }
 #credits { background: var(--bg); border-top: 1px solid var(--line); }
 #methodologie .inner, #credits .inner { max-width: 860px; margin: 0 auto; padding: 32px 20px; }
-#methodologie h2, #credits h2 { font-family: var(--display); font-size: 1.3rem; text-transform: none; letter-spacing: -.02em; color: var(--ink); }
-#methodologie h3, #credits h3 { font-family: var(--display); font-size: 1rem; margin: 22px 0 6px; }
+#credits h2 { font-family: var(--display); font-size: 1.3rem; text-transform: none; letter-spacing: -.02em; color: var(--ink); }
+/* On its own page the methodology's title is the header h1, so its
+   subsections are h2s styled like the credits' h3s. */
+#methodologie h2, #credits h3 { font-family: var(--display); font-size: 1rem; margin: 22px 0 6px; }
+#methodologie h2 { text-transform: none; letter-spacing: normal; color: var(--ink); }
 #methodologie p, #methodologie li, #credits p, #credits li { color: var(--ink-2); }
 .site-footer { text-align: center; font-size: .82rem; color: var(--cream); background: var(--ink); padding: 20px 20px 26px; }
 .site-footer p { margin: 0 0 6px; }

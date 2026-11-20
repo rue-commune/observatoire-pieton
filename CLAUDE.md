@@ -114,7 +114,14 @@ its own overhead and loses shared context.
   update. Never edit it by hand.
 - `assets/css/observatoire.css`, `assets/js/observatoire.js`: the app,
   shared by all cities, inlined into the page.
-- `layouts/home.html`: assembles the single self-contained page.
+- `layouts/home.html`: assembles the self-contained map page.
+- `content/methodologie.md` and `layouts/methodologie.html`: the
+  methodology page, rendered at build time from the same `config.json`
+  and `data.json` (no app JS). Its own `ville:` must match the home
+  page's.
+- `layouts/_partials/`: `ville.html` loads and validates a city's config
+  and data; `head.html`, `header.html` and `footer.html` are shared by
+  both pages.
 - `scripts/`: project scripts, including `test.sh`, the gate itself.
 - `public/` and `resources/_gen/` are generated and ignored. Docker files
   live in `docker/`; the build context is the repository root, so

@@ -1,0 +1,20 @@
+{{- /* Shared <head> content. Context: dict "titre", "description" and
+       optionally "leaflet". The page stays self-contained: the stylesheet
+       is inlined, after Leaflet's so that its overrides win. */ -}}
+{{- $css := resources.Get "css/observatoire.css" -}}
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ .titre }}</title>
+<meta name="description" content="{{ .description }}">
+<meta name="theme-color" content="#f5f0e6">
+<link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
+{{- /* Same fonts as the Rue Commune site (../web/styles.css). */}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
+{{- if .leaflet }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+{{- end }}
+<style>
+{{ $css.Content | safeCSS }}</style>

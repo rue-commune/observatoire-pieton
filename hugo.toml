@@ -4,8 +4,8 @@ baseURL = "https://5metres.fr/"
 locale = "fr"
 title = "Observatoire piéton"
 
-# The site is a single self-contained page for now.
-disableKinds = ["taxonomy", "term", "section", "page", "RSS", "sitemap", "404"]
+# A self-contained map page plus plain content pages (the methodology).
+disableKinds = ["taxonomy", "term", "section", "RSS", "sitemap", "404"]
 
 defaultContentLanguage = "fr"
 # Keep the page diffable against the original standalone file.

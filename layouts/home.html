@@ -4,73 +4,26 @@
        "tuiles" URL in config.json).
        html/template strips JS comments, so the config banner is emitted as
        data. */ -}}
-{{- $ville := .Params.ville -}}
-{{- $cfgRes := resources.Get (printf "villes/%s/config.json" $ville) -}}
-{{- $dataRes := resources.Get (printf "villes/%s/data.json" $ville) -}}
-{{- if not (and $cfgRes $dataRes) -}}
-  {{- errorf "%s: missing assets/villes/%s/config.json or data.json" .File.Path $ville -}}
-{{- end -}}
-{{- $cfg := $cfgRes | transform.Unmarshal -}}
-{{- /* data.json is regenerated periodically and inlined verbatim, so a bad
-       update would otherwise ship a broken page: fail the build instead.
-       Unmarshal also rejects invalid JSON. */ -}}
-{{- $data := $dataRes | transform.Unmarshal -}}
-{{- range slice "generated" "labels" "communes" "quartiers" "rows" "counts" "geo" "removal" -}}
-  {{- if eq (index $data .) nil -}}
-    {{- errorf "%s: data.json lacks required key %q (or it is null)" $ville . -}}
-  {{- end -}}
-{{- end -}}
-{{- if not (findRE `^\d{4}-\d{2}-\d{2}$` $data.generated) -}}
-  {{- errorf "%s: data.json generated=%q is not YYYY-MM-DD" $ville $data.generated -}}
-{{- end -}}
-{{- $_ := time.AsTime $data.generated -}}{{/* rejects impossible dates */}}
-{{- /* Inlined JSON must not be able to close or confuse its <script>. */ -}}
-{{- range slice $cfgRes $dataRes -}}
-  {{- if findRE `(?i)</script|<!--` .Content 1 -}}
-    {{- errorf "%s: %s contains </script or <!--; escape < as \\u003c" $ville .Name -}}
-  {{- end -}}
-{{- end -}}
+{{- $v := partial "ville.html" . -}}
+{{- $cfg := $v.cfg -}}
+{{- $cfgRes := $v.cfgRes -}}
+{{- $dataRes := $v.dataRes -}}
 {{- $ed := site.Params.editeur -}}
 {{- $or := site.Params.origine -}}
-{{- if not (and $ed.nom $ed.url $ed.mentions $or.nom $or.url) -}}
-  {{- errorf "hugo.toml: params.editeur and params.origine must be complete (publisher and origin credit)" -}}
-{{- end -}}
-{{- $css := resources.Get "css/observatoire.css" -}}
 {{- $js := resources.Get "js/observatoire.js" -}}
 <!doctype html>
 <html lang="fr" data-theme="light">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $cfg.titre }}</title>
-<meta name="description" content="{{ .Description }}">
-<meta name="theme-color" content="#f5f0e6">
-<link rel="icon" href="{{ "favicon.svg" | relURL }}" type="image/svg+xml">
-{{- /* Same fonts as the Rue Commune site (../web/styles.css). */}}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+{{ partial "head.html" (dict "titre" $cfg.titre "description" .Description "leaflet" true) }}
 <script>
 {{ "/* =====================================================================\n   CONFIGURATION (modifiable)\n   ===================================================================== */" | safeJS }}
 window.CITY_CONFIG = {{ strings.TrimSuffix "\n" $cfgRes.Content | safeJS }};
 </script>
 <script>window.CITY_DATA = {{ strings.TrimSuffix "\n" $dataRes.Content | safeJS }};</script>
-<style>
-{{ $css.Content | safeCSS }}</style>
 </head>
 <body>
 
-<header class="site-header">
-  <a class="brand" href="{{ $ed.url }}" aria-label="{{ $ed.nom }}, site de l'association">
-    {{- /* Brand mark from the Rue Commune site (../web/index.html). */}}
-    <svg class="brand-mark" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="25" fill="currentColor"/><path d="M15 34V18h11.5c6.6 0 10.5 3 10.5 8 0 3.4-1.9 5.8-5.2 7l5.8 7h-7.2l-5-6H21v6h-6Zm6-5h5.1c3.1 0 4.7-1 4.7-3s-1.6-3-4.7-3H21v6Z" fill="#f5f0e6"/></svg>
-    <span>Rue<br>Commune</span>
-  </a>
-  <div class="titles"><h1 id="titre"></h1><p id="sous-titre"></p></div>
-  <nav><a href="#methodologie">Méthodologie</a><a href="#credits">Crédits</a></nav>
-</header>
+{{ partial "header.html" (dict "page" . "titre" $cfg.titre "sousTitre" $cfg.sousTitre) }}
 
 <main class="layout">
   <div class="panel">
@@ -152,29 +105,6 @@ window.CITY_CONFIG = {{ strings.TrimSuffix "\n" $cfgRes.Content | safeJS }};
   </div>
 </main>
 
-<section id="methodologie">
-  <div class="inner">
-    <h2>Méthodologie</h2>
-    <p>La loi d'orientation des mobilités de 2019 (article L118-5-1 du code de la voirie routière) interdit tout emplacement de stationnement sur la chaussée dans les <strong>5 mètres en amont des passages piétons</strong>, sauf pour les vélos et engins de déplacement personnel. Le but est que piétons et conducteurs se voient mutuellement. Toutes les communes doivent s'être mises en conformité <strong>au plus tard le 31 décembre 2026</strong>.</p>
-    <p id="m-snapshot"></p>
-
-    <h3>Trois niveaux, d'après les prescriptions du Cerema</h3>
-    <ul>
-      <li><span class="dot ko"></span> <strong>Non conforme</strong> : au moins une place se trouve dans les 5 m <em>en amont</em> du passage, du côté d'où arrivent les véhicules. Une place sur le passage lui-même compte aussi.</li>
-      <li><span class="dot mid"></span> <strong>Conforme à l'obligation réglementaire</strong> : aucune place côté amont, mais au moins une dans les 5 m côté aval.</li>
-      <li><span class="dot ok"></span> <strong>Conforme à la recommandation complète</strong> : 5 m dégagés des deux côtés. Le Cerema recommande même 5 à 10 m.</li>
-    </ul>
-
-    <h3>Comment c'est mesuré</h3>
-    <ul id="m-method"></ul>
-
-    <h3>Données utilisées</h3>
-    <ul id="m-data"></ul>
-
-    <h3>Limites</h3>
-    <ul id="m-limits"></ul>
-  </div>
-</section>
 <section id="credits">
   <div class="inner">
     <h2>À propos et crédits</h2>
@@ -183,17 +113,14 @@ window.CITY_CONFIG = {{ strings.TrimSuffix "\n" $cfgRes.Content | safeJS }};
 
     <h3>Données, fond de carte et logiciels</h3>
     <ul>
-      <li>Données ouvertes de {{ $cfg.producteur }} ({{ $cfg.licence | default "ODbL" }}) et des autres sources listées dans la <a href="#methodologie">méthodologie</a>.</li>
+      <li>Données ouvertes de {{ $cfg.producteur }} ({{ $cfg.licence | default "ODbL" }}) et des autres sources listées dans la <a href="{{ (site.GetPage "/methodologie").RelPermalink }}">méthodologie</a>.</li>
       <li>Sens de circulation et noms des rues&nbsp;: © les contributeurs d'<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</li>
       <li>Fond de carte&nbsp;: Plan IGN, <a href="https://www.ign.fr/">IGN</a> – <a href="https://cartes.gouv.fr/">Géoplateforme</a>.</li>
       <li>Carte interactive&nbsp;: <a href="https://leafletjs.com/">Leaflet</a>.</li>
     </ul>
   </div>
 </section>
-<footer class="site-footer">
-  <p>Observatoire citoyen réalisé par <a href="{{ $ed.url }}">{{ $ed.nom }}</a> à partir des données ouvertes de {{ $cfg.producteur }} ({{ $cfg.licence | default "ODbL" }}).</p>
-  <p>D'après un concept et un code aimablement offerts par le <a href="{{ $or.url }}">{{ $or.nom }}</a> · <a href="#credits">Crédits</a> · <a href="{{ $ed.mentions }}">Mentions légales</a></p>
-</footer>
+{{ partial "footer.html" $cfg }}
 
 <script>
 {{ $js.Content | safeJS }}</script>
