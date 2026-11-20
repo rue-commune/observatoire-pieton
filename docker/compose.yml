@@ -33,6 +33,12 @@ services:
     command: ["hugo", "server", "--bind", "0.0.0.0", "--port", "1313",
               "--baseURL", "http://localhost:1313/", "--buildDrafts"]
 
+  # Data generator: downloads the open data and rewrites the city's
+  # data.json (see scripts/data/README.md).
+  dev-data:
+    extends: dev-base
+    command: ["python3", "scripts/data/nantes.py"]
+
   dev-sh:
     extends: dev-base
     command: sleep infinity

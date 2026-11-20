@@ -9,9 +9,10 @@ docker_compose() {
 
 BUILD_NOCACHE=""
 usage() {
-    echo "Usage: $0 [-b] build|test|serve|sh|down [hugo flags...]"
+    echo "Usage: $0 [-b] build|test|serve|data|sh|down [args...]"
     echo "  -b  Rebuild the selected service without Docker cache"
-    echo "  Extra arguments to build, test and serve are passed to hugo."
+    echo "  Extra arguments to build, test and serve are passed to hugo,"
+    echo "  and to data, to scripts/data/nantes.py (try --help)."
 }
 while getopts ":b" opt; do
     case "$opt" in
@@ -45,6 +46,11 @@ case "$action" in
         docker_compose run --rm --build --service-ports dev-serve \
             hugo server --bind 0.0.0.0 --port 1313 \
             --baseURL http://localhost:1313/ --buildDrafts "$@"
+        ;;
+    data)
+        maybe_build_nocache dev-data
+        docker_compose run --rm --build dev-data \
+            python3 scripts/data/nantes.py "$@"
         ;;
     sh)
         maybe_build_nocache dev-sh

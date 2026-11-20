@@ -12,3 +12,9 @@ resources/_gen/
 # Original standalone page: embeds a CARTO API key (no longer used by the
 # site). Never commit it; it is kept locally only as a reference.
 /observatoire-passages-pietons-nantes.html
+
+# Data pipeline downloads (scripts/data)
+.cache/
+
+# Python bytecode (scripts/data)
+__pycache__/

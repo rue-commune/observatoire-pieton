@@ -7,3 +7,5 @@ resources/_gen/
 *.html
 node_modules/
 .env
+.cache/
+__pycache__/

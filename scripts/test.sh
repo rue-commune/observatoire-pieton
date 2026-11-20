@@ -11,6 +11,9 @@ echo "==== Hugo: full render, warnings are failures"
 hugo --renderToMemory --panicOnWarning \
     --printPathWarnings --printI18nWarnings "$@" || failed+=(hugo)
 
+echo "==== Data generator: unit tests"
+python3 -m unittest discover -s scripts/data -p 'test_*.py' || failed+=(data)
+
 if [ "${#failed[@]}" -ne 0 ]; then
     echo "==== FAILED: ${failed[*]}" >&2
     exit 1

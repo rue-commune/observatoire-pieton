@@ -25,15 +25,17 @@ means `(cd docker && ./docker-manage.sh test)`; use the equivalent
 
 | Command | Effect |
 | --- | --- |
-| `./docker/docker-manage.sh test` | Verification gate (`scripts/test.sh`): strict Hugo render |
+| `./docker/docker-manage.sh test` | Verification gate (`scripts/test.sh`): strict Hugo render, data generator tests |
 | `./docker/docker-manage.sh build` | `hugo --gc --cleanDestinationDir` into `public/` |
 | `./docker/docker-manage.sh serve` | Live server on http://localhost:1313/ (drafts shown) |
+| `./docker/docker-manage.sh data` | Regenerate `assets/villes/nantes/data.json` from open data |
 | `./docker/docker-manage.sh sh` | Shared interactive shell in the container |
 | `./docker/docker-manage.sh down` | Stop the development stack |
 
 `-b` before the action rebuilds the image without cache. Extra arguments
-to `build`, `test` and `serve` are appended to the hugo command. The
-Hugo version is pinned by `HUGO_VERSION` in `docker/Dockerfile`.
+to `build`, `test` and `serve` are appended to the hugo command, and to
+`data`, to `scripts/data/nantes.py`. The Hugo version is pinned by
+`HUGO_VERSION` in `docker/Dockerfile`.
 
 ## Testing
 
@@ -125,6 +127,10 @@ its own overhead and loses shared context.
   and data; `head.html`, `header.html` and `footer.html` are shared by
   all pages.
 - `scripts/`: project scripts, including `test.sh`, the gate itself.
+- `scripts/data/`: the data generator (`nantes.py`, Python with shapely
+  and pyproj, run in Docker), its tests, `compare.py` to review an update,
+  and the commune contours. See `scripts/data/README.md`. Downloads are
+  cached in `.cache/` (ignored).
 - `public/` and `resources/_gen/` are generated and ignored. Docker files
   live in `docker/`; the build context is the repository root, so
   `.dockerignore` sits there.
@@ -141,12 +147,14 @@ Never add that key to any file.
 
 ## Updating the data
 
-Replace `assets/villes/<ville>/data.json` with the new generated file,
-then run the test gate. The layout validates the JSON, the required
-keys (present and non-null), the `generated` date, and the absence of
-`</script` or `<!--`, so a malformed update fails the build
-instead of shipping a broken page. If the pipeline also changed source
-dates or texts, update `config.json` too. Commit the data update on its
-own.
+Run `./docker/docker-manage.sh data`, which downloads the open data,
+rewrites `assets/villes/nantes/data.json` and updates source dates in
+`config.json`. Compare the result with the committed file using
+`scripts/data/compare.py` (see `scripts/data/README.md`), then run the
+test gate. The layout validates the JSON, the required keys (present and
+non-null), the `generated` date, and the absence of `</script` or `<!--`,
+so a malformed update fails the build instead of shipping a broken page.
+If the source texts changed, update `config.json` by hand. Commit the
+data update on its own.
 
 When you have read this file, say so aloud.
