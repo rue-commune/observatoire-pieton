@@ -13,7 +13,7 @@ description: "La règle des 5 mètres en bref : pourquoi la loi LOM interdit l
 - **À Nantes :** d'après les données ouvertes, **{{< donnees "places" >}} places de stationnement** sont encore à supprimer dans la métropole pour respecter la loi. La [carte]({{< relref "/_index.md" >}}) montre où.
 - **5 mètres, c'est un minimum :** dans les rues à 50 km/h, le Cerema conseille de dégager 7 à 10 mètres.
 
-{{< figure src="/images/lom/cerema-obligatoire.jpg" link="/images/lom/cerema-obligatoire.jpg" width="858" height="354" alt="Schéma vu du ciel d'une rue à sens unique pour les voitures, avec une voie cyclable dans l'autre sens, et un passage piéton. Pour chaque sens, la place de stationnement située juste avant le passage, sur 5 mètres, est barrée d'une croix rouge. Deux cônes rouges montrent que la voiture et le vélo qui arrivent voient ainsi les piétons qui attendent sur les trottoirs." caption="Ce que la loi impose : pas de place de stationnement dans les 5 mètres avant le passage, du côté d'où arrivent les véhicules. Cliquer pour agrandir." attr="Schéma : Cerema" attrlink="https://www.cerema.fr/" >}}
+{{< figure src="/images/lom/cerema-obligatoire.jpg" link="/images/lom/cerema-obligatoire.jpg" width="858" height="354" alt="Schéma vu du ciel d'une rue à sens unique pour les voitures, avec une voie cyclable dans l'autre sens, et un passage piéton. Pour chaque sens, la place de stationnement située juste avant le passage, sur 5 mètres, est barrée d'une croix rouge. Deux cônes rouges montrent que la voiture et le vélo qui arrivent voient ainsi les piétons qui attendent sur les trottoirs." caption="Ce que la loi impose : pas de place de stationnement dans les 5 mètres avant le passage, du côté d'où arrivent les véhicules. Schéma : Cerema." >}}
 
 ## La règle des 5 mètres
 
@@ -60,7 +60,7 @@ Les 5 mètres libérés ne sont pas perdus. On peut y installer :
 - **La peinture ne suffit pas toujours.** Là où les voitures continuent de se garer, il faut des potelets (petits poteaux), des arceaux ou une avancée de trottoir.
 - **Certaines places comptent beaucoup**, comme les places pour personnes handicapées ou de livraison. Elles doivent être déplacées à proximité, pas simplement supprimées.
 
-{{< figure src="/images/lom/cerema-recommande.jpg" link="/images/lom/cerema-recommande.jpg" width="858" height="354" alt="Le même schéma de rue, avec trois zones vertes « espace neutralisé » de 5 à 10 mètres : avant le passage pour les voitures, et des deux côtés du passage le long de la voie cyclable. La voiture et le vélo qui arrivent voient largement les trottoirs." caption="Ce que recommande le Cerema : dégager de 5 à 10 mètres, et pas seulement avant le passage. Cliquer pour agrandir." attr="Schéma : Cerema" attrlink="https://www.cerema.fr/" >}}
+{{< figure src="/images/lom/cerema-recommande.jpg" link="/images/lom/cerema-recommande.jpg" width="858" height="354" alt="Le même schéma de rue, avec trois zones vertes « espace neutralisé » de 5 à 10 mètres : avant le passage pour les voitures, et des deux côtés du passage le long de la voie cyclable. La voiture et le vélo qui arrivent voient largement les trottoirs." caption="Ce que recommande le Cerema : dégager de 5 à 10 mètres, et pas seulement avant le passage. Schéma : Cerema." >}}
 
 ## Et à Nantes ?
 
