@@ -101,8 +101,10 @@ its own overhead and loses shared context.
 - Comment where it adds value (why, not what).
 - Follow formatter/linter configuration when the project adds any, rather
   than personal taste. Python is formatted with black at 79 columns
-  (`pyproject.toml`) and checked with flake8 (`.flake8`); the gate
-  enforces both.
+  (`scripts/data/pyproject.toml`) and checked with flake8 (`.flake8`);
+  the gate enforces both. Never put a `pyproject.toml` at the
+  repository root: Cloudflare Pages would run `pip install .` on it
+  and fail the build.
 
 ## Layout
 

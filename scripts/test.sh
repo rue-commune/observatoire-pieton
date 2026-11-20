@@ -15,8 +15,10 @@ echo "==== Data generator: unit tests"
 python3 -m unittest discover -s scripts/data -p 'test_*.py' || failed+=(data)
 
 # Same style rules as our other Python repositories: black at 79
-# columns (also set in pyproject.toml, for editors), and flake8
-# configured in .flake8.
+# columns (also set in scripts/data/pyproject.toml, for editors), and
+# flake8 configured in .flake8. pyproject.toml must stay out of the
+# repository root: Cloudflare Pages would then run `pip install .` and
+# fail the build.
 echo "==== Python: black"
 black --check --line-length 79 scripts || failed+=(black)
 
