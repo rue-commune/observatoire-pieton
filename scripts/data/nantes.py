@@ -26,6 +26,8 @@ from shapely.affinity import affine_transform
 from shapely.geometry import LineString, Point, box, shape
 from shapely.ops import transform as shp_transform, unary_union
 
+import history as H
+
 ROOT = Path(__file__).resolve().parents[2]
 VILLE = ROOT / "assets" / "villes" / "nantes"
 COMMUNES_GEOJSON = Path(__file__).resolve().parent / "nantes-communes.geojson"
@@ -67,6 +69,11 @@ HIGHWAY_RANK = {
 }
 for _h in list(HIGHWAY_RANK):
     HIGHWAY_RANK[_h + "_link"] = HIGHWAY_RANK[_h]
+# Bump whenever a rule changes a crossing's status, so the history tells
+# a change of method from a change in the street. Recorded in each
+# snapshot (see history.py).
+METHODE = 1
+
 USER_AGENT = "observatoire-pieton-data/1.0 (+https://5metres.fr/)"
 
 # Method parameters, as stated in config.json "methode".
@@ -760,6 +767,12 @@ def load_crossings(path):
                 ),
             }
         )
+    # Ids order the rows and link the history: they must be unique.
+    seen, dup = set(), set()
+    for c in out:
+        (dup if c["gid"] in seen else seen).add(c["gid"])
+    if dup:
+        sys.exit(f"Duplicate crossing ids in the source: {sorted(dup)}")
     return out
 
 
@@ -767,29 +780,90 @@ def gid_key(gid):
     return (0, int(gid), "") if gid.isdigit() else (1, 0, gid)
 
 
-def order_crossings(crossings, order_path, previous_path):
+def order_crossings(
+    crossings, order_path, previous_path, alias=None, order=None
+):
     """Sort crossings so that published row indices stay put.
 
     Permalinks (#passage-N) and exported ids are row indices, so rows
-    keep the order of the last update, recorded as crossing ids in
-    order_path; new crossings go at the end. A deleted crossing still
-    shifts the rows after it. Without an order file, the order is
-    recovered from the published data.json by position."""
-    if order_path.exists():
-        order = json.loads(order_path.read_text(encoding="utf-8"))
-    else:
-        order = order_from_positions(crossings, previous_path)
+    keep the order of the last update: order, the ids of the latest
+    snapshot, else those recorded in order_path. New crossings go at the
+    end. A deleted crossing still shifts the rows after it. Without
+    either, the order is recovered from the published data.json by
+    position.
+
+    alias, given only with order, maps a crossing's id to the id it had
+    in that snapshot when the two were linked by position (renumbered
+    or swapped ids): the crossing then keeps that row. An id whose row
+    went to another crossing that way counts as new. An id that moved
+    and was not linked keeps its row, so that the rows after it don't
+    shift; the generator warns about it."""
+    if order is None:
+        alias = None
+        if order_path.exists():
+            order = json.loads(order_path.read_text(encoding="utf-8"))
+        else:
+            order = order_from_positions(crossings, previous_path)
     rank = {gid: i for i, gid in enumerate(order)}
-    gone = len(set(rank) - {c["gid"] for c in crossings})
-    new = sum(1 for c in crossings if c["gid"] not in rank)
+    alias = alias or {}
+    claimed = set(alias.values())
+
+    def key(c):
+        g = c["gid"]
+        if g in alias:
+            return alias[g]
+        return None if g in claimed else g
+
+    keys = {c["gid"]: key(c) for c in crossings}
+    gone = len(set(rank) - set(keys.values()))
+    new = sum(1 for k in keys.values() if k not in rank)
     log(f"  row order: {len(rank)} known, {new} new, {gone} removed")
     crossings.sort(
         key=lambda c: (
-            c["gid"] not in rank,
-            rank.get(c["gid"], 0),
+            keys[c["gid"]] not in rank,
+            rank.get(keys[c["gid"]], 0),
             gid_key(c["gid"]),
         )
     )
+
+
+def position(line):
+    """A crossing's published position, as in data.json rows."""
+    lon, lat = TO_WGS.transform(line.centroid.x, line.centroid.y)
+    return round(lat, 6), round(lon, 6)
+
+
+def link_previous(crossings, archive, order_path, report=True):
+    """Link the crossings to the latest snapshot, checking that every
+    id still lies where it was (logged if report).
+
+    The latest snapshot, today's included after an earlier run today,
+    is the one the current data.json rows follow, so it gives the row
+    order. Returns (order, alias, hard) for order_crossings: order is
+    None without a snapshot, and hard says an id moved and could not be
+    repaired. Stops if the order file disagrees with the snapshot: a
+    discarded update left its snapshot behind."""
+    snaps = H.load_archive(archive)
+    if not snaps:
+        log("  no snapshot yet: ids not checked")
+        return None, {}, False
+    last = snaps[-1]
+    order = [r[6] for r in last["rows"]]
+    if order_path.exists() and (
+        json.loads(order_path.read_text(encoding="utf-8")) != order
+    ):
+        sys.exit(
+            f"{order_path.name} does not follow the latest snapshot,"
+            f" {last['generated']}. If that update was discarded, delete"
+            " its snapshot. Nothing was written."
+        )
+    old = H.triples(last)
+    cur = [(c["gid"], *position(c["line"])) for c in crossings]
+    lk = H.link(old, cur)
+    if report:
+        H.describe(lk, old, cur, f"ids {last['generated']}")
+    alias = {cur[j][0]: old[i][0] for j, i in lk.pairs.items()}
+    return order, alias, lk.hard
 
 
 def order_from_positions(crossings, previous_path):
@@ -910,7 +984,14 @@ def main(argv=None):
     paths = fetch(args.cache, args.offline, (47.10, -1.84, 47.36, -1.36))
     log("Reading inputs")
     crossings = load_crossings(paths[DS_CROSSINGS][0])
-    order_crossings(crossings, ORDER_FILE, VILLE / "data.json")
+    today = datetime.date.today().isoformat()
+    site = args.out.resolve() == (VILLE / "data.json").resolve()
+    # Writing the site's data, the history rebuild reports the link from
+    # the previous date; else report the link to the latest snapshot.
+    order, alias, hard = link_previous(
+        crossings, H.ARCHIVE, ORDER_FILE, report=not site
+    )
+    order_crossings(crossings, ORDER_FILE, VILLE / "data.json", alias, order)
     spaces = load_spaces(paths)
     roads = Roads(paths["osm"])
     log(
@@ -920,7 +1001,7 @@ def main(argv=None):
     log("Computing")
     r = compute(crossings, spaces, roads)
     data = {
-        "generated": datetime.date.today().isoformat(),
+        "generated": today,
         "params": {"dist": DIST, "lat": LAT, "min_area": MIN_AREA},
         "meta": {
             "source_passages": "Traversées piétonnes (Nantes Métropole)",
@@ -952,14 +1033,28 @@ def main(argv=None):
         "streets": r["streets"],
         "st": r["st"],
     }
+    dates = {"https://www.openstreetmap.org/": roads.date}
+    for ds in DATASETS:
+        meta = json.loads(paths[ds][1].read_text(encoding="utf-8"))
+        modified = meta["metas"]["default"].get("modified")
+        if isinstance(modified, str):
+            url = f"https://data.nantesmetropole.fr/explore/dataset/{ds}/"
+            dates[url] = modified[:10]
     save(args.out, dump(data).encode("utf-8"))
     log(f"Wrote {args.out}")
-    if args.out.resolve() == (VILLE / "data.json").resolve():
-        save(
-            ORDER_FILE,
-            (json.dumps([c["gid"] for c in crossings]) + "\n").encode("utf-8"),
-        )
+    if site:
+        gids = [c["gid"] for c in crossings]
+        save(ORDER_FILE, (json.dumps(gids) + "\n").encode("utf-8"))
         log(f"Wrote {ORDER_FILE}")
+        H.ARCHIVE.mkdir(parents=True, exist_ok=True)
+        snap = H.snapshot(data, gids, METHODE, dates)
+        out = H.ARCHIVE / f"{today}.json"
+        save(out, H.dump_snapshot(snap).encode("utf-8"))
+        log(f"Wrote {out}")
+        log("History")
+        # Reports the link from the previous date, also when this run
+        # replaced an earlier snapshot of today.
+        hard |= H.rebuild(report_all=False)[1]
     if args.debug:
         args.debug.write_text(
             json.dumps(
@@ -975,16 +1070,17 @@ def main(argv=None):
             encoding="utf-8",
         )
     if not args.no_config:
-        dates = {"https://www.openstreetmap.org/": roads.date}
-        for ds in DATASETS:
-            meta = json.loads(paths[ds][1].read_text(encoding="utf-8"))
-            modified = meta["metas"]["default"].get("modified")
-            if isinstance(modified, str):
-                url = f"https://data.nantesmetropole.fr/explore/dataset/{ds}/"
-                dates[url] = modified[:10]
         if update_config_dates(VILLE / "config.json", dates):
             log("Updated source dates in config.json")
+    if hard:
+        log(
+            "\n" + "!" * 72 + "\nWARNING: some crossing ids moved and could"
+            " not be matched by position\n(see WARNING!! above). The files"
+            " were written; review before\ncommitting.\n" + "!" * 72
+        )
+        return 3
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

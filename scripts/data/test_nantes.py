@@ -11,6 +11,7 @@ from pathlib import Path
 
 from shapely.geometry import LineString, Point, box
 
+import history as H
 import nantes as N
 
 CROSSING = LineString([(-5, 0), (5, 0)])
@@ -153,6 +154,98 @@ class OrderTest(unittest.TestCase):
         self.assertEqual(
             [c["gid"] for c in crossings], ["20", "10", "30", "5"]
         )
+
+    def test_crossings_linked_by_position_keep_their_old_row(self):
+        # 7 is 99 renumbered; 20 and 30 swapped places; 10 moved away
+        # and its old place went to 77, so 10 counts as new.
+        crossings = [{"gid": g} for g in ("30", "7", "20", "10", "77")]
+        alias = {"7": "99", "20": "30", "30": "20", "77": "10"}
+        order = ["20", "99", "10", "30"]
+        absent = Path("/nonexistent")
+        N.order_crossings(crossings, absent, absent, alias, order)
+        self.assertEqual(
+            [c["gid"] for c in crossings], ["30", "7", "77", "20", "10"]
+        )
+
+    def test_alias_is_ignored_without_the_snapshot_order(self):
+        # An order file or positions already give current ids.
+        crossings = [{"gid": g} for g in ("20", "30")]
+        with tempfile.TemporaryDirectory() as d:
+            order = Path(d) / "order.json"
+            order.write_text('["30", "20"]', encoding="utf-8")
+            alias = {"20": "30", "30": "20"}
+            N.order_crossings(crossings, order, Path(d) / "x.json", alias)
+        self.assertEqual([c["gid"] for c in crossings], ["30", "20"])
+
+
+class LinkPreviousTest(unittest.TestCase):
+    """Rows follow the latest snapshot, so that a second run on the same
+    day orders them as the first did."""
+
+    def crossings(self, *gids):
+        # 10 m crossings 100 m apart, in Lambert-93 near Nantes
+        return [
+            {
+                "gid": g,
+                "line": LineString(
+                    [(355000 + 100 * k, 6690000), (355010 + 100 * k, 6690000)]
+                ),
+            }
+            for k, g in enumerate(gids)
+        ]
+
+    def write(self, archive, date, crossings):
+        rows = [
+            [*N.position(c["line"]), 0, -1, 0, 0, c["gid"]] for c in crossings
+        ]
+        snap = {
+            "generated": date,
+            "methode": 1,
+            "sources": {},
+            "communes": ["A"],
+            "quartiers": [],
+            "removal": {"c": {}},
+            "fields": H.SNAPSHOT_FIELDS,
+            "rows": rows,
+        }
+        (archive / f"{date}.json").write_text(H.dump_snapshot(snap))
+
+    def run_today(self, archive, order_path):
+        # 20 and 30 swapped places; 99 was renumbered 7
+        today = self.crossings("30", "20", "7")
+        order, alias, hard = N.link_previous(today, archive, order_path)
+        N.order_crossings(today, order_path, archive, alias, order)
+        return [c["gid"] for c in today], hard
+
+    def test_a_second_run_the_same_day_keeps_the_rows(self):
+        with tempfile.TemporaryDirectory() as d:
+            archive, order_path = Path(d), Path(d) / "order"
+            self.write(archive, "2027-01-15", self.crossings("20", "30", "99"))
+            order_path.write_text('["20", "30", "99"]')
+            first, hard = self.run_today(archive, order_path)
+            self.assertEqual((first, hard), (["30", "20", "7"], False))
+            # what the first run writes
+            self.write(archive, "2027-02-15", self.crossings(*first))
+            order_path.write_text(json.dumps(first))
+            self.assertEqual(
+                self.run_today(archive, order_path), (first, False)
+            )
+
+    def test_an_order_file_disagreeing_with_the_snapshot_stops(self):
+        with tempfile.TemporaryDirectory() as d:
+            archive, order_path = Path(d), Path(d) / "order"
+            self.write(archive, "2027-01-15", self.crossings("20", "30", "99"))
+            order_path.write_text('["30", "20", "99"]')
+            with self.assertRaises(SystemExit):
+                self.run_today(archive, order_path)
+
+    def test_an_id_moved_to_an_empty_place_is_hard(self):
+        with tempfile.TemporaryDirectory() as d:
+            archive, order_path = Path(d), Path(d) / "order"
+            self.write(archive, "2027-01-15", self.crossings("30", "20", "x"))
+            today = self.crossings("30", "20", "y", "x")  # x moved 100 m
+            _, _, hard = N.link_previous(today, archive, order_path, False)
+        self.assertTrue(hard)
 
 
 class DividedRoadTest(unittest.TestCase):

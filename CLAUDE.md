@@ -118,6 +118,10 @@ its own overhead and loses shared context.
   re-serialise it). `tuiles` is the keyless IGN Plan IGN v2 tile URL.
 - `assets/villes/<ville>/data.json`: generated data, replaced on each
   update. Never edit it by hand.
+- `archives/<ville>/YYYY-MM-DD.json`: one status snapshot per data
+  update, committed for traceability and never shipped to the browser.
+  `assets/villes/<ville>/history.json` is generated from them (not yet
+  used by the site). Never edit either by hand.
 - `assets/css/observatoire.css`, `assets/js/observatoire.js`: the app,
   shared by all cities, inlined into the page.
 - `layouts/home.html`: assembles the self-contained map page.
@@ -136,7 +140,8 @@ its own overhead and loses shared context.
 - `scripts/`: project scripts, including `test.sh`, the gate itself.
 - `scripts/data/`: the data generator (`nantes.py`, Python with shapely
   and pyproj, run in Docker), its tests, `compare.py` to review an update,
-  and the commune contours. See `scripts/data/README.md`. Downloads are
+  `history.py` for the snapshot archive and history, and the commune
+  contours. See `scripts/data/README.md`. Downloads are
   cached in `.cache/` (ignored).
 - `public/` and `resources/_gen/` are generated and ignored. Docker files
   live in `docker/`; the build context is the repository root, so
@@ -154,13 +159,18 @@ Never add that key to any file.
 
 ## Updating the data
 
-Run `./docker/docker-manage.sh data`, which downloads the open data,
-rewrites `assets/villes/nantes/data.json` and updates source dates in
-`config.json`. Compare the result with the committed file using
-`scripts/data/compare.py` (see `scripts/data/README.md`), then run the
-test gate. The layout validates the JSON, the required keys (present and
-non-null), the `generated` date, and the absence of `</script` or `<!--`,
-so a malformed update fails the build instead of shipping a broken page.
+The data is updated monthly; [DATA-UPDATE.md](DATA-UPDATE.md) is the
+step-by-step procedure, for humans and agents alike. In short: run
+`./docker/docker-manage.sh data`, which downloads the open data,
+rewrites `assets/villes/nantes/data.json`, archives a snapshot, rebuilds
+`history.json` and updates source dates in `config.json`. Compare the
+result with the committed file and the previous snapshot using
+`scripts/data/compare.py` (see `scripts/data/README.md`), heed any
+crossing id warnings (the run then exits with status 3, though every
+file was written), then run the test gate. The layout validates the
+JSON, the required keys (present and non-null), the `generated` date,
+and the absence of `</script` or `<!--`, so a malformed update fails the
+build instead of shipping a broken page.
 If the source texts changed, update `config.json` by hand. Commit the
 data update on its own.
 
