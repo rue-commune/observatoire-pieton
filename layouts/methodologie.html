@@ -14,7 +14,7 @@
 
 {{ partial "header.html" (dict "page" . "titre" .Title "sousTitre" $cfg.titre) }}
 
-<main id="methodologie">
+<main id="methodologie" class="page">
   <div class="inner">
     <p>La loi d'orientation des mobilités de 2019 (article L118-5-1 du code de la voirie routière) interdit tout emplacement de stationnement sur la chaussée dans les <strong>5 mètres en amont des passages piétons</strong>, sauf pour les vélos et engins de déplacement personnel. Le but est que piétons et conducteurs se voient mutuellement. Toutes les communes doivent s'être mises en conformité <strong>au plus tard le 31 décembre 2026</strong>.</p>
     <p>Cette <a href="{{ site.Home.RelPermalink }}">carte</a> est une <strong>photographie à un instant donné</strong> : elle reflète l'état des données de stationnement publiées par {{ $cfg.producteur }} au moment du calcul ({{ $calcul }}), et ne tient pas compte des travaux réalisés depuis.</p>

@@ -4,7 +4,7 @@ baseURL = "https://5metres.fr/"
 locale = "fr"
 title = "Observatoire piéton"
 
-# A self-contained map page plus plain content pages (the methodology).
+# A self-contained map page plus plain content pages (methodology, credits).
 disableKinds = ["taxonomy", "term", "section", "RSS", "sitemap", "404"]
 
 defaultContentLanguage = "fr"

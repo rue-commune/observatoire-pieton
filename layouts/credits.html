@@ -1,0 +1,30 @@
+{{- $v := partial "ville.html" . -}}
+{{- $cfg := $v.cfg -}}
+{{- $ed := site.Params.editeur -}}
+{{- $or := site.Params.origine -}}
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+{{ partial "head.html" (dict "titre" (printf "%s · %s" .Title $cfg.titre) "description" .Description) }}
+</head>
+<body>
+
+{{ partial "header.html" (dict "page" . "titre" .Title "sousTitre" $cfg.titre) }}
+
+<main id="credits" class="page">
+  <div class="inner">
+    <p>Cet observatoire citoyen est publié par <a href="{{ $ed.url }}">{{ $ed.nom }}</a>, association nantaise indépendante qui défend une métropole marchable et cyclable.</p>
+    <p>Il repose sur un concept et sur un code aimablement offerts par le <a href="{{ $or.url }}">{{ $or.nom }}</a>. Merci à elles et à eux&nbsp;!</p>
+
+    <h2>Données, fond de carte et logiciels</h2>
+    <ul>
+      <li>Données ouvertes de {{ $cfg.producteur }} ({{ $cfg.licence | default "ODbL" }}) et des autres sources listées dans la <a href="{{ (site.GetPage "/methodologie").RelPermalink }}">méthodologie</a>.</li>
+      <li>Sens de circulation et noms des rues&nbsp;: © les contributeurs d'<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> (ODbL).</li>
+      <li>Fond de carte&nbsp;: Plan IGN, <a href="https://www.ign.fr/">IGN</a> – <a href="https://cartes.gouv.fr/">Géoplateforme</a>.</li>
+      <li>Carte interactive&nbsp;: <a href="https://leafletjs.com/">Leaflet</a>.</li>
+    </ul>
+  </div>
+</main>
+{{ partial "footer.html" $cfg }}
+</body>
+</html>

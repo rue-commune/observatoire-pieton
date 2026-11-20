@@ -104,7 +104,7 @@ its own overhead and loses shared context.
 - `hugo.toml` `[params.editeur]` and `[params.origine]`: the publisher
   (Rue Commune) and the origin credit (Collectif Paris Piétons, who
   contributed the concept and original code). The header, footer and
-  "À propos et crédits" section use them; keep the origin credit.
+  credits page use them; keep the origin credit.
   Branding (palette, fonts, brand mark, `static/favicon.svg`) follows
   the Rue Commune site in `../web`.
 - `assets/villes/<ville>/config.json`: hand-maintained city settings and
@@ -119,9 +119,11 @@ its own overhead and loses shared context.
   methodology page, rendered at build time from the same `config.json`
   and `data.json` (no app JS). Its own `ville:` must match the home
   page's.
+- `content/credits.md` and `layouts/credits.html`: the "À propos et
+  crédits" page; same rule for `ville:`.
 - `layouts/_partials/`: `ville.html` loads and validates a city's config
   and data; `head.html`, `header.html` and `footer.html` are shared by
-  both pages.
+  all pages.
 - `scripts/`: project scripts, including `test.sh`, the gate itself.
 - `public/` and `resources/_gen/` are generated and ignored. Docker files
   live in `docker/`; the build context is the repository root, so

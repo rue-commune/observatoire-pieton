@@ -3,5 +3,5 @@
 {{- $or := site.Params.origine -}}
 <footer class="site-footer">
   <p>Observatoire citoyen réalisé par <a href="{{ $ed.url }}">{{ $ed.nom }}</a> à partir des données ouvertes de {{ .producteur }} ({{ .licence | default "ODbL" }}).</p>
-  <p>D'après un concept et un code aimablement offerts par le <a href="{{ $or.url }}">{{ $or.nom }}</a> · <a href="{{ site.Home.RelPermalink }}#credits">Crédits</a> · <a href="{{ $ed.mentions }}">Mentions légales</a></p>
+  <p>D'après un concept et un code aimablement offerts par le <a href="{{ $or.url }}">{{ $or.nom }}</a> · <a href="{{ (site.GetPage "/credits").RelPermalink }}">Crédits</a> · <a href="{{ $ed.mentions }}">Mentions légales</a></p>
 </footer>
