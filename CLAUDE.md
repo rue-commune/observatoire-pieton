@@ -121,6 +121,9 @@ its own overhead and loses shared context.
 - `assets/css/observatoire.css`, `assets/js/observatoire.js`: the app,
   shared by all cities, inlined into the page.
 - `layouts/home.html`: assembles the self-contained map page.
+- `content/lom.md` and `layouts/lom.html`: the "Loi LOM" page, plain
+  Markdown in the shared page frame, written for non-specialists. Same
+  rule for `ville:` as the methodology page.
 - `content/methodologie.md` and `layouts/methodologie.html`: the
   methodology page, rendered at build time from the same `config.json`
   and `data.json` (no app JS). Its own `ville:` must match the home

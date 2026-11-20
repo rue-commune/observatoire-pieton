@@ -1,0 +1,19 @@
+{{- $v := partial "ville.html" . -}}
+{{- $cfg := $v.cfg -}}
+<!doctype html>
+<html lang="fr" data-theme="light">
+<head>
+{{ partial "head.html" (dict "titre" (printf "%s · %s" .Title $cfg.titre) "description" .Description) }}
+</head>
+<body>
+
+{{ partial "header.html" (dict "page" . "titre" .Title "sousTitre" $cfg.titre) }}
+
+<main id="lom" class="page">
+  <div class="inner">
+    {{ .Content }}
+  </div>
+</main>
+{{ partial "footer.html" $cfg }}
+</body>
+</html>

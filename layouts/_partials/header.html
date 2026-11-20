@@ -2,8 +2,9 @@
 {{- $ed := site.Params.editeur -}}
 {{- $methodo := site.GetPage "/methodologie" -}}
 {{- $credits := site.GetPage "/credits" -}}
-{{- if not (and $methodo $credits) -}}
-  {{- errorf "content/methodologie.md or content/credits.md is missing; the header links to both" -}}
+{{- $lom := site.GetPage "/lom" -}}
+{{- if not (and $lom $methodo $credits) -}}
+  {{- errorf "content/lom.md, methodologie.md or credits.md is missing; the header links to all three" -}}
 {{- end -}}
 <header class="site-header">
   <a class="brand" href="{{ $ed.url }}" aria-label="{{ $ed.nom }}, site de l'association">
@@ -14,6 +15,7 @@
   <div class="titles"><h1 id="titre">{{ .titre }}</h1><p id="sous-titre">{{ .sousTitre }}</p></div>
   <nav>
     {{- if not .page.IsHome }}<a href="{{ site.Home.RelPermalink }}">Carte</a>{{ end }}
+    {{- if not (.page.Eq $lom) }}<a href="{{ $lom.RelPermalink }}">Loi LOM</a>{{ end }}
     {{- if not (.page.Eq $methodo) }}<a href="{{ $methodo.RelPermalink }}">Méthodologie</a>{{ end }}
     {{- if not (.page.Eq $credits) }}<a href="{{ $credits.RelPermalink }}">Crédits</a>{{ end }}
   </nav>

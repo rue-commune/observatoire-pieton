@@ -112,12 +112,15 @@ h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color:
 .pop .meta { color: var(--ink-2); font-size: .82rem; margin-top: 6px; }
 .pop .links { margin-top: 8px; font-size: .85rem; display: flex; gap: 12px; flex-wrap: wrap; }
 
-/* Text pages (methodology, credits). Their title is the header h1, so
-   their subsections are h2s, restyled from the map panel's small caps. */
+/* Text pages (LOM, methodology, credits). Their title is the header h1,
+   so their sections are h2s, restyled from the map panel's small caps,
+   with h3s below them. */
 .page { background: var(--surface); }
 .page .inner { max-width: 860px; margin: 0 auto; padding: 32px 20px; }
 .page h2 { font-family: var(--display); font-size: 1rem; margin: 22px 0 6px; text-transform: none; letter-spacing: normal; color: var(--ink); }
+.page h3 { font-family: var(--display); font-size: .95rem; margin: 16px 0 4px; color: var(--ink); }
 .page p, .page li { color: var(--ink-2); }
+.page blockquote { margin: 12px 0; padding: 2px 16px; border-left: 3px solid var(--accent); background: var(--surface-2); }
 .site-footer { text-align: center; font-size: .82rem; color: var(--cream); background: var(--ink); padding: 20px 20px 26px; }
 .site-footer p { margin: 0 0 6px; }
 .site-footer a { color: var(--cream); }
@@ -144,8 +147,9 @@ h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color:
   .map-wrap { order: 2; height: 62vh; min-height: 380px; }
   #s-filtres { order: 3; } #s-rank { order: 4; } #s-places { order: 5; } #s-search { order: 6; } #s-export { order: 7; }
 }
-/* Smallest phones: drop the wordmark so the nav stays beside the mark. */
-@media (max-width: 359px) {
+/* Small phones (up to 375-px-wide ones, with three nav links): drop the
+   wordmark so the nav stays beside the mark. */
+@media (max-width: 389px) {
   .site-header .brand span { display: none; }
 }
 /* Plan IGN v2 is a busy, saturated basemap: mute it so the red/orange/green
