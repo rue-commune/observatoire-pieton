@@ -88,4 +88,5 @@ file (the first run), the order is recovered from the published
 ## Tests
 
 `test_nantes.py` checks the geometric rules on synthetic cases. The test
-gate (`scripts/test.sh`) runs it.
+gate (`scripts/test.sh`, also run by CI) runs it, and checks the code
+with black (79 columns) and flake8.

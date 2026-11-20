@@ -8,9 +8,12 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 
 # Development tools for the interactive shell
+# black, flake8: Python style checks in scripts/test.sh.
 apt-get install -y --no-install-recommends     \
+    black                                       \
     emacs-nox                                   \
     fd-find                                     \
+    flake8                                      \
     jq                                          \
     less                                        \
     procps                                      \

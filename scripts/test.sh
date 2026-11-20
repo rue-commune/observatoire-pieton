@@ -14,6 +14,15 @@ hugo --renderToMemory --panicOnWarning \
 echo "==== Data generator: unit tests"
 python3 -m unittest discover -s scripts/data -p 'test_*.py' || failed+=(data)
 
+# Same style rules as our other Python repositories: black at 79
+# columns (also set in pyproject.toml, for editors), and flake8
+# configured in .flake8.
+echo "==== Python: black"
+black --check --line-length 79 scripts || failed+=(black)
+
+echo "==== Python: flake8"
+flake8 scripts || failed+=(flake8)
+
 if [ "${#failed[@]}" -ne 0 ]; then
     echo "==== FAILED: ${failed[*]}" >&2
     exit 1

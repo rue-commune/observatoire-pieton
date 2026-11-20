@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 79
+# E203 and W503 contradict black's formatting.
+extend-ignore = E203, W503
+exclude = .git, .cache, __pycache__, public, resources, node_modules

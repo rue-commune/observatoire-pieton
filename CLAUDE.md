@@ -25,7 +25,7 @@ means `(cd docker && ./docker-manage.sh test)`; use the equivalent
 
 | Command | Effect |
 | --- | --- |
-| `./docker/docker-manage.sh test` | Verification gate (`scripts/test.sh`): strict Hugo render, data generator tests |
+| `./docker/docker-manage.sh test` | Verification gate (`scripts/test.sh`): strict Hugo render, data generator tests, black and flake8 |
 | `./docker/docker-manage.sh build` | `hugo --gc --cleanDestinationDir` into `public/` |
 | `./docker/docker-manage.sh serve` | Live server on http://localhost:1313/ (drafts shown) |
 | `./docker/docker-manage.sh data` | Regenerate `assets/villes/nantes/data.json` from open data |
@@ -79,7 +79,9 @@ Reviews are read-only unless asked to fix. Findings should:
 - State the triggering condition and the impact ("fails when X because
   Y"), ranked by severity, with `file:line` references, plus a commit
   SHA when the review is posted outside the working tree.
-- The project has no CI, so reviewers run the test gate themselves.
+- CI (`.github/workflows/test.yml`) runs the same gate on pull requests
+  and pushes to `main`; reviewers still run it themselves on unpushed
+  work.
 - Stay scoped to the diff plus what is needed to verify a suspicion.
 - Say explicitly when nothing was found.
 
@@ -98,7 +100,9 @@ its own overhead and loses shared context.
 - No gratuitous whitespace or formatting changes unrelated to the task.
 - Comment where it adds value (why, not what).
 - Follow formatter/linter configuration when the project adds any, rather
-  than personal taste.
+  than personal taste. Python is formatted with black at 79 columns
+  (`pyproject.toml`) and checked with flake8 (`.flake8`); the gate
+  enforces both.
 
 ## Layout
 
